@@ -68,7 +68,7 @@ type NetLog = {
 }
 
 // Correlate by source id: resolver task events may omit the hostname.
-function findHostResolverEvents(netLog: string, host: string): string[] {
+export function findHostResolverEvents(netLog: string, host: string): string[] {
   const parsed = parseNetLog(netLog)
   const eventTypeNames = invert(parsed.constants?.logEventTypes ?? {})
   const events = parsed.events ?? []

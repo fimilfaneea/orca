@@ -22,6 +22,11 @@ import {
 import { isDocPreviewSession } from '../browser/doc-preview-protocol'
 import { registerHostFrameNavigationGuard } from './host-frame-navigation-guard'
 import { installPrivilegedWindowNavigationPolicy } from './privileged-window-navigation'
+import {
+  attachPluginEditorGuest,
+  isAdmissiblePluginEditorAttach,
+  isPluginEditorSession
+} from '../plugins/custom-editors/plugin-editor-guests'
 
 /** orca-preview is outside normal browser URL admission; require the doc partition and a main-minted user-preview grant. */
 function isAdmissibleDocPreviewAttach(partition: string, src: string): boolean {
@@ -56,6 +61,8 @@ export function installMainWindowWebviewSecurity(mainWindow: BrowserWindow): voi
   const browserWindowClosePreload = join(__dirname, 'browser-window-close-preload.js')
   // Only previews get this pinned editor-link preload; never accept renderer preload values or expose it to browsing guests.
   const docPreviewLinkPreload = join(__dirname, 'doc-preview-link-preload.js')
+  // Custom editor guests get only the message relay, pinned here like the preview preload.
+  const pluginEditorGuestPreload = join(__dirname, 'plugin-editor-guest-preload.js')
   mainWindow.webContents.on('will-attach-webview', (event, webPreferences, params) => {
     const src = typeof params.src === 'string' ? params.src : ''
     const normalizedSrc = normalizeBrowserNavigationUrl(src)
@@ -65,10 +72,16 @@ export function installMainWindowWebviewSecurity(mainWindow: BrowserWindow): voi
     // Direct-SSH partitions exist only after proxy verification; renderer URLs need no main-side grants, like profile partitions.
     const isLocalSshPartition = isLocalSshBrowserPartition(partition)
     const isDocPreviewAttach = isAdmissibleDocPreviewAttach(partition, src)
+    const isPluginEditorAttach = isAdmissiblePluginEditorAttach(
+      mainWindow.webContents,
+      partition,
+      src
+    )
 
     // Require an allowlisted src/partition; renderer mistakes must not grant preload/Node authority.
     if (
       !isDocPreviewAttach &&
+      !isPluginEditorAttach &&
       (!normalizedSrc ||
         (!isProfilePartition && !isRoutePartition && !isLocalSshPartition) ||
         (isRoutePartition && normalizedSrc !== ORCA_BROWSER_BLANK_URL))
@@ -79,7 +92,11 @@ export function installMainWindowWebviewSecurity(mainWindow: BrowserWindow): voi
 
     delete params.preload
     // Install main-world close policy before inline scripts can call window.close.
-    webPreferences.preload = isDocPreviewAttach ? docPreviewLinkPreload : browserWindowClosePreload
+    webPreferences.preload = isPluginEditorAttach
+      ? pluginEditorGuestPreload
+      : isDocPreviewAttach
+        ? docPreviewLinkPreload
+        : browserWindowClosePreload
     // Clear legacy preloadURL as well as preload so guests cannot inherit the main bridge.
     delete (webPreferences as Record<string, unknown>).preloadURL
     // Electron 43 omits inherited arguments; clear defensively so future inheritance cannot leak browser-host identity.
@@ -99,6 +116,11 @@ export function installMainWindowWebviewSecurity(mainWindow: BrowserWindow): voi
   })
 
   mainWindow.webContents.on('did-attach-webview', (_event, guest) => {
+    if (isPluginEditorSession(guest.session)) {
+      // Editor guests get no browser routing, popups or devtools; main relays their messages.
+      attachPluginEditorGuest(guest, mainWindow.webContents)
+      return
+    }
     if (isDocPreviewSession(guest.session)) {
       // workspace-doc guests cannot use browser routing/popups/auth identity; attach this live host as their read-failure sink.
       setDocPreviewFailureSink(mainWindow.webContents)
