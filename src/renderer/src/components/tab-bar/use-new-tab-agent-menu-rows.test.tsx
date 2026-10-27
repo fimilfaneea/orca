@@ -50,39 +50,45 @@ vi.mock('@/runtime/host-structured-agents', () => ({
 vi.mock('@/lib/agent-launch-route-input', async (importOriginal) => {
   const actual = await importOriginal<typeof RouteInput>()
   return {
-  workspaceKindForWorktreeId: () => 'git-worktree',
-  resolveAgentLaunchHost: () => ({
-    executionHostId: 'local',
-    hostCapabilities:
-      readLocalRuntimeCapabilitiesOrUnknown() === null
-        ? null
-        : [CHAT, CLIENT, CATALOG, ...(mocks.publishing ? [AVAILABILITY] : [])]
-  }),
-  buildAgentLaunchRouteInput: (...args: Parameters<typeof actual.buildAgentLaunchRouteInput>) => {
-    const [state, { agent }] = args
-    if (mocks.realRoutes) {
-      mocks.countingCandidate = agent === 'opencode'
-      if (mocks.countingCandidate) mocks.candidateCalls++
-      try { return actual.buildAgentLaunchRouteInput(state, args[1]) }
-      finally { mocks.countingCandidate = false }
+    workspaceKindForWorktreeId: () => 'git-worktree',
+    resolveAgentLaunchHost: () => ({
+      executionHostId: 'local',
+      hostCapabilities:
+        readLocalRuntimeCapabilitiesOrUnknown() === null
+          ? null
+          : [CHAT, CLIENT, CATALOG, ...(mocks.publishing ? [AVAILABILITY] : [])]
+    }),
+    buildAgentLaunchRouteInput: (...args: Parameters<typeof actual.buildAgentLaunchRouteInput>) => {
+      const [state, { agent }] = args
+      if (mocks.realRoutes) {
+        mocks.countingCandidate = agent === 'opencode'
+        if (mocks.countingCandidate) mocks.candidateCalls++
+        try {
+          return actual.buildAgentLaunchRouteInput(state, args[1])
+        } finally {
+          mocks.countingCandidate = false
+        }
+      }
+      return {
+        agent,
+        executionHostId: 'local',
+        hostCapabilities:
+          readLocalRuntimeCapabilitiesOrUnknown() === null
+            ? null
+            : [CHAT, CLIENT, CATALOG, ...(mocks.publishing ? [AVAILABILITY] : [])],
+        clientCapabilities: [CHAT, CLIENT],
+        hostStructuredAgents: ['claude', 'codex', 'opencode']
+      }
     }
-    return {
-    agent,
-    executionHostId: 'local',
-    hostCapabilities:
-      readLocalRuntimeCapabilitiesOrUnknown() === null
-        ? null
-        : [CHAT, CLIENT, CATALOG, ...(mocks.publishing ? [AVAILABILITY] : [])],
-    clientCapabilities: [CHAT, CLIENT],
-    hostStructuredAgents: ['claude', 'codex', 'opencode']
-    }
-  }
   }
 })
 vi.mock('@/lib/host-chat-program', async (importOriginal) => {
   const actual = await importOriginal<typeof ChatProgram>()
-  return { ...actual, readChatProgram: (...args: Parameters<typeof actual.readChatProgram>) =>
-    mocks.program() ?? actual.readChatProgram(...args) }
+  return {
+    ...actual,
+    readChatProgram: (...args: Parameters<typeof actual.readChatProgram>) =>
+      mocks.program() ?? actual.readChatProgram(...args)
+  }
 })
 import { useAgentMenuObservation, useNewTabAgentMenuRows } from './use-new-tab-agent-menu-rows'
 const initial = useAppStore.getState()
@@ -123,25 +129,37 @@ it('bounds alternate candidate route work at N and 10N through the production ob
     const worktrees = Array.from({ length: count }, (_, index) => {
       const id = `${TEST_REPO.id}::/work/${index}`
       const worktree = makeWorktree({ id, repoId: TEST_REPO.id, hostId: 'local' })
-      Object.defineProperty(worktree, 'id', { enumerable: true, get: () => {
-        if (mocks.countingCandidate) mocks.candidateVisits++
-        return id
-      } })
+      Object.defineProperty(worktree, 'id', {
+        enumerable: true,
+        get: () => {
+          if (mocks.countingCandidate) mocks.candidateVisits++
+          return id
+        }
+      })
       return worktree
     })
     for (const candidate of ['no-cli', 'missing-program', 'usable'] as const) {
       mocks.program.mockReturnValue(candidate === 'missing-program' ? 'missing' : 'available')
-      mocks.detection.mockReturnValue({ detectedIds: candidate === 'no-cli' ? ['claude', 'codex'] : ['claude', 'codex', 'opencode'] })
+      mocks.detection.mockReturnValue({
+        detectedIds: candidate === 'no-cli' ? ['claude', 'codex'] : ['claude', 'codex', 'opencode']
+      })
       useAppStore.setState({
-        repos: [TEST_REPO], worktreesByRepo: { [TEST_REPO.id]: worktrees },
-        detectedWorktreesByRepo: {}, activeWorktreeId: worktreeId,
+        repos: [TEST_REPO],
+        worktreesByRepo: { [TEST_REPO.id]: worktrees },
+        detectedWorktreesByRepo: {},
+        activeWorktreeId: worktreeId,
         activeWorkspaceExecutionHostId: 'local',
-        settings: { ...getDefaultSettings('/home/me'), experimentalNativeChat: true,
-          nativeChatProviders: { opencode: false }, disabledTuiAgents: [] }
+        settings: {
+          ...getDefaultSettings('/home/me'),
+          experimentalNativeChat: true,
+          nativeChatProviders: { opencode: false },
+          disabledTuiAgents: []
+        }
       })
       mocks.candidateCalls = mocks.candidateVisits = 0
       const hook = renderHook(() => useAgentMenuObservation(worktreeId, true, { kind: 'local' }))
-      const rows = hook.result.current.model.state === 'settled' ? hook.result.current.model.rows : []
+      const rows =
+        hook.result.current.model.state === 'settled' ? hook.result.current.model.rows : []
       const offered = rows.find((row) => row.agent === 'opencode')
       if (candidate === 'usable') {
         expect(offered).toMatchObject({ kind: 'cli', chat: true, executionHostId: 'local' })

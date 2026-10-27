@@ -321,6 +321,7 @@ function SurfaceChoiceRow({
   children: React.ReactNode
 }): React.JSX.Element {
   const otherButton = useRef<HTMLButtonElement>(null)
+  const releaseTarget = useRef<{ event: PointerEvent; target: EventTarget } | null>(null)
   const title = rowTitle(row, label)
   return (
     <DropdownMenuItem
@@ -328,12 +329,23 @@ function SurfaceChoiceRow({
       disabled={disabled}
       title={title}
       aria-label={title}
-      // Radix selects the row on nested clicks or drag release; pointer/focus on the trailing button chooses the other surface.
-      onSelect={() => {
-        const button = otherButton.current
-        const opensOther =
-          button !== null && (button.matches(':hover') || button === document.activeElement)
-        runLaunch(opensOther ? other : row)
+      onPointerUp={(event) => {
+        // Radix synchronously clicks the row on drag release, discarding the release target.
+        const release = { event: event.nativeEvent, target: event.target }
+        releaseTarget.current = release
+        queueMicrotask(() => {
+          if (releaseTarget.current === release) releaseTarget.current = null
+        })
+      }}
+      onClick={(event) => {
+        const release = releaseTarget.current
+        releaseTarget.current = null
+        if (disabled) return
+        const target =
+          event.target === event.currentTarget && release && release.event.eventPhase !== Event.NONE
+            ? release.target
+            : event.target
+        runLaunch(target instanceof Node && otherButton.current?.contains(target) ? other : row)
       }}
       onKeyDown={(event) => {
         if (event.key === 'ArrowRight') {

@@ -94,9 +94,13 @@ export function buildNewTabAgentMenuRows(args: {
   const providedHere = chatAgents.filter(canOpen)
   const chatToo = new Set<TuiAgent>()
   for (const agent of chatAgents) {
+    const displayed = isNativeChatProviderDisplayedOn(settings, agent, providedHere)
+    if (!displayed && (!installed.includes(agent) || !canOpen(agent))) {
+      continue
+    }
     const answer = args.hostChatAnswer(agent)
-    if (!isNativeChatProviderDisplayedOn(settings, agent, providedHere)) {
-      if (answer === 'yes' && canOpen(agent)) {
+    if (!displayed) {
+      if (answer === 'yes') {
         chatToo.add(agent)
       }
       continue
