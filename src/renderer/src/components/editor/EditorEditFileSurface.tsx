@@ -23,6 +23,8 @@ import { PluginFileTypeSuggestion } from './PluginFileTypeSuggestion'
 import type { useMarkdownDocuments } from './useMarkdownDocuments'
 import { EditorMarkdownFileSurface } from './EditorMarkdownFileSurface'
 import type { MarkdownRenderState } from './markdown-render-mode'
+import type { ActivePluginCustomEditor } from '@/store/plugin-custom-editors'
+import PluginCustomEditorFrame from './PluginCustomEditorFrame'
 
 const noopEditorContentChange = (_content: string): void => {}
 const noopEditorSave = async (_content: string): Promise<boolean> => false
@@ -45,6 +47,7 @@ export function EditorEditFileSurface({
   isMermaid,
   isCsv,
   isNotebook,
+  customEditor,
   mdViewMode,
   inlineMarkdownRenderState,
   isChangesMode,
@@ -77,6 +80,7 @@ export function EditorEditFileSurface({
   isMermaid: boolean
   isCsv: boolean
   isNotebook: boolean
+  customEditor?: ActivePluginCustomEditor | null
   mdViewMode: MarkdownViewMode
   inlineMarkdownRenderState: MarkdownRenderState | null
   isChangesMode: boolean
@@ -287,6 +291,16 @@ export function EditorEditFileSurface({
       onDirtyStateHint={activeFile.readOnly ? undefined : handleDirtyStateHint}
       onContentChange={activeFile.readOnly ? undefined : handleContentChange}
       onSave={activeFile.readOnly ? undefined : handleSave}
+    />
+  ) : customEditor ? (
+    <PluginCustomEditorFrame
+      key={`${activeFile.id}\u0000${customEditor.key}`}
+      editor={customEditor}
+      fileId={activeFile.id}
+      content={currentContent}
+      readOnly={activeFile.readOnly === true}
+      onContentChange={handleContentChange}
+      onSave={handleSave}
     />
   ) : isNotebook && mdViewMode === 'rich' ? (
     <IpynbViewer
