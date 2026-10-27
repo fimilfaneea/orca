@@ -136,7 +136,9 @@ function renderChoice(
     />,
     defaultOpen
   )
-  if (!defaultOpen) reopenMenu()
+  if (!defaultOpen) {
+    reopenMenu()
+  }
   return {
     row: screen.getByRole('menuitem', {
       name: kind === 'cli' ? 'Launch Codex in a new terminal' : 'Start a chat with Codex'
@@ -182,13 +184,17 @@ it.each(['cli', 'chat'] as const)(
       'pointer'
     ] as const) {
       const { row, button } = renderChoice(kind)
-      if (action !== 'button-click') hover(button)
+      if (action !== 'button-click') {
+        hover(button)
+      }
       act(() => row.focus())
       if (action === 'return-left' || action === 'return-up' || action.startsWith('button-')) {
         fireEvent.keyDown(row, { key: 'ArrowRight' })
         expect(document.activeElement).toBe(button)
       }
-      if (action === 'return-left') fireEvent.keyDown(button, { key: 'ArrowLeft' })
+      if (action === 'return-left') {
+        fireEvent.keyDown(button, { key: 'ArrowLeft' })
+      }
       if (action === 'return-up') {
         fireEvent.keyDown(button, { key: 'ArrowDown' })
         await vi.waitFor(() =>
@@ -213,7 +219,9 @@ it.each(['cli', 'chat'] as const)(
         fireEvent.click(button)
       } else {
         const alternate = action.startsWith('button-')
-        if (!alternate) expect(document.activeElement).toBe(row)
+        if (!alternate) {
+          expect(document.activeElement).toBe(row)
+        }
         fireEvent.keyDown(alternate ? button : row, {
           key: action.endsWith('space') ? ' ' : 'Enter'
         })
@@ -240,13 +248,7 @@ it.each(['cli', 'chat'] as const)(
       hover(button)
       fireEvent.pointerUp(alternate ? button : row, { pointerType: 'mouse' })
       expectLaunch(
-        alternate
-          ? kind === 'cli'
-            ? 'chat'
-            : 'terminal'
-          : kind === 'cli'
-            ? 'terminal'
-            : 'chat'
+        alternate ? (kind === 'cli' ? 'chat' : 'terminal') : kind === 'cli' ? 'terminal' : 'chat'
       )
       cleanup()
     }
@@ -257,7 +259,9 @@ it.each(['cli', 'chat'] as const)(
         fireEvent.pointerDown(row, { pointerType: 'mouse' })
         fireEvent.pointerUp(button, { pointerType: 'mouse' })
         expect(launchMock).not.toHaveBeenCalled()
-        if (!deferred) row.click()
+        if (!deferred) {
+          row.click()
+        }
       })
       if (deferred) {
         await act(async () => {
@@ -337,7 +341,9 @@ it.each(['chat', 'cli'] as const)(
       )
       if (outcome === 'unconfirmed') {
         expect(toastError).toHaveBeenCalledWith(expect.stringContaining("Couldn't send to"), {
-          description: expect.stringContaining("Orca couldn't confirm your message reached the agent")
+          description: expect.stringContaining(
+            "Orca couldn't confirm your message reached the agent"
+          )
         })
       }
       cleanup()

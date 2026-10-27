@@ -334,13 +334,17 @@ function SurfaceChoiceRow({
         const release = { event: event.nativeEvent, target: event.target }
         releaseTarget.current = release
         queueMicrotask(() => {
-          if (releaseTarget.current === release) releaseTarget.current = null
+          if (releaseTarget.current === release) {
+            releaseTarget.current = null
+          }
         })
       }}
       onClick={(event) => {
         const release = releaseTarget.current
         releaseTarget.current = null
-        if (disabled) return
+        if (disabled) {
+          return
+        }
         const target =
           event.target === event.currentTarget && release && release.event.eventPhase !== Event.NONE
             ? release.target

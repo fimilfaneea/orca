@@ -62,7 +62,9 @@ vi.mock('@/lib/agent-launch-route-input', async (importOriginal) => {
       const [state, { agent }] = args
       if (mocks.realRoutes) {
         mocks.countingCandidate = agent === 'opencode'
-        if (mocks.countingCandidate) mocks.candidateCalls++
+        if (mocks.countingCandidate) {
+          mocks.candidateCalls++
+        }
         try {
           return actual.buildAgentLaunchRouteInput(state, args[1])
         } finally {
@@ -132,7 +134,9 @@ it('bounds alternate candidate route work at N and 10N through the production ob
       Object.defineProperty(worktree, 'id', {
         enumerable: true,
         get: () => {
-          if (mocks.countingCandidate) mocks.candidateVisits++
+          if (mocks.countingCandidate) {
+            mocks.candidateVisits++
+          }
           return id
         }
       })
