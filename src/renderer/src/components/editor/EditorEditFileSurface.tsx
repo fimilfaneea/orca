@@ -25,6 +25,7 @@ import { EditorMarkdownFileSurface } from './EditorMarkdownFileSurface'
 import type { MarkdownRenderState } from './markdown-render-mode'
 import type { ActivePluginCustomEditor } from '@/store/plugin-custom-editors'
 import PluginCustomEditorFrame from './PluginCustomEditorFrame'
+import PluginBytesCustomEditorSurface from './PluginBytesCustomEditorSurface'
 
 const noopEditorContentChange = (_content: string): void => {}
 const noopEditorSave = async (_content: string): Promise<boolean> => false
@@ -125,6 +126,16 @@ export function EditorEditFileSurface({
         message={fileContent.loadError}
         code={fileContent.loadErrorCode}
         onRetry={() => reloadContent(activeFile)}
+      />
+    )
+  }
+  if (customEditor?.contentKind === 'bytes') {
+    return (
+      <PluginBytesCustomEditorSurface
+        key={`${activeFile.id}\u0000${customEditor.key}`}
+        editor={customEditor}
+        filePath={activeFile.filePath}
+        fileContent={fileContent}
       />
     )
   }

@@ -26,6 +26,7 @@ import type { RuntimeWorkspaceFileRoute } from '@/lib/runtime-workspace-file-rou
 import { editorTabFileAccess, isClientLocalReadOnlyTab } from '@/lib/local-file-access'
 import { isFloatingWorkspaceId } from '../../../../shared/floating-workspace-worktree'
 import { chatScratchFileAddress } from '@/runtime/runtime-chat-scratch-file-address'
+import type { RuntimeFileReadArgs } from '@/runtime/runtime-file-client-types'
 import { stampCleanTabDiskBaseline } from './editor-clean-tab-disk-baseline'
 import { applyEditorFileLoadFailure } from './editor-deleted-file-reload'
 
@@ -195,23 +196,21 @@ export function useEditorPanelFileContentLoader({
           // Forced reloads must bypass reads started before the external change.
           inFlightFileReads.delete(key)
         }
+        const readArgs: RuntimeFileReadArgs = {
+          target: readTarget,
+          filePath,
+          relativePath: readRelativePath,
+          worktreeId: readWorktreeId,
+          connectionId: readConnectionId,
+          expectedExternalSshTargetId: restoredOpenFile?.externalSshTargetId,
+          includeLocalLogMetadata: isLiveTailLogTab,
+          access,
+          terminalArtifactGrantId: restoredOpenFile?.terminalArtifactGrantId,
+          pageOversizedBinary: true
+        }
         let pending = inFlightFileReads.get(key)
         if (!pending) {
-          const promise = readEditorCsvFileContent(
-            {
-              target: readTarget,
-              filePath,
-              relativePath: readRelativePath,
-              worktreeId: readWorktreeId,
-              connectionId: readConnectionId,
-              expectedExternalSshTargetId: restoredOpenFile?.externalSshTargetId,
-              includeLocalLogMetadata: isLiveTailLogTab,
-              access,
-              terminalArtifactGrantId: restoredOpenFile?.terminalArtifactGrantId,
-              pageOversizedBinary: true
-            },
-            allowPagedPreview
-          )
+          const promise = readEditorCsvFileContent(readArgs, allowPagedPreview)
           pending = { externalEventGeneration: options?.externalEventGeneration, promise }
           inFlightFileReads.set(key, pending)
           queueMicrotask(() => {
@@ -233,7 +232,12 @@ export function useEditorPanelFileContentLoader({
           useAppStore.getState().setCsvPreviewOnly(id, Boolean(result.csvPreview))
         }
         delete fileLoadRetryAttemptsRef.current[id]
-        setFileContents((prev) => ({ ...prev, [id]: result }))
+        // Why: a bytes custom editor pages a binary file on the same route; a grant has no ranged reads.
+        const loaded =
+          result.isBinary && !readArgs.terminalArtifactGrantId
+            ? { ...result, byteSource: readArgs }
+            : result
+        setFileContents((prev) => ({ ...prev, [id]: loaded }))
         stampCleanTabDiskBaseline(id, result)
       } catch (err) {
         if (fileReadGenerationRef.current[id] !== generation) {
