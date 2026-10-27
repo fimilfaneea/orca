@@ -3,6 +3,9 @@ import { act, cleanup, renderHook } from '@testing-library/react'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { useAppStore } from '@/store'
 import { getDefaultSettings } from '../../../../shared/constants'
+import { makeWorktree, TEST_REPO } from '@/store/slices/worktrees-slice-test-fixtures'
+import type * as RouteInput from '@/lib/agent-launch-route-input'
+import type * as ChatProgram from '@/lib/host-chat-program'
 import {
   readLocalRuntimeCapabilitiesOrUnknown,
   setLocalRuntimeCapabilitiesForTests
@@ -20,7 +23,12 @@ const mocks = vi.hoisted(() => ({
   catalog: vi.fn(),
   failed: vi.fn(),
   load: vi.fn(),
-  detection: vi.fn()
+  detection: vi.fn(),
+  realRoutes: false,
+  candidateCalls: 0,
+  candidateVisits: 0,
+  countingCandidate: false,
+  program: vi.fn<() => ChatProgram.ChatProgramObservation | undefined>()
 }))
 vi.mock('@/runtime/runtime-rpc-subscribe', () => ({ subscribeRuntimeRpc: mocks.subscribe }))
 vi.mock('@/lib/structured-agent-session-host-admission', () => ({
@@ -39,7 +47,9 @@ vi.mock('@/runtime/host-structured-agents', () => ({
   hostStructuredAgentsVersion: () => 0,
   subscribeHostStructuredAgents: () => () => {}
 }))
-vi.mock('@/lib/agent-launch-route-input', () => ({
+vi.mock('@/lib/agent-launch-route-input', async (importOriginal) => {
+  const actual = await importOriginal<typeof RouteInput>()
+  return {
   workspaceKindForWorktreeId: () => 'git-worktree',
   resolveAgentLaunchHost: () => ({
     executionHostId: 'local',
@@ -48,7 +58,15 @@ vi.mock('@/lib/agent-launch-route-input', () => ({
         ? null
         : [CHAT, CLIENT, CATALOG, ...(mocks.publishing ? [AVAILABILITY] : [])]
   }),
-  buildAgentLaunchRouteInput: (_state: unknown, { agent }: { agent: string }) => ({
+  buildAgentLaunchRouteInput: (...args: Parameters<typeof actual.buildAgentLaunchRouteInput>) => {
+    const [state, { agent }] = args
+    if (mocks.realRoutes) {
+      mocks.countingCandidate = agent === 'opencode'
+      if (mocks.countingCandidate) mocks.candidateCalls++
+      try { return actual.buildAgentLaunchRouteInput(state, args[1]) }
+      finally { mocks.countingCandidate = false }
+    }
+    return {
     agent,
     executionHostId: 'local',
     hostCapabilities:
@@ -57,14 +75,23 @@ vi.mock('@/lib/agent-launch-route-input', () => ({
         : [CHAT, CLIENT, CATALOG, ...(mocks.publishing ? [AVAILABILITY] : [])],
     clientCapabilities: [CHAT, CLIENT],
     hostStructuredAgents: ['claude', 'codex', 'opencode']
-  })
-}))
+    }
+  }
+  }
+})
+vi.mock('@/lib/host-chat-program', async (importOriginal) => {
+  const actual = await importOriginal<typeof ChatProgram>()
+  return { ...actual, readChatProgram: (...args: Parameters<typeof actual.readChatProgram>) =>
+    mocks.program() ?? actual.readChatProgram(...args) }
+})
 import { useAgentMenuObservation, useNewTabAgentMenuRows } from './use-new-tab-agent-menu-rows'
 const initial = useAppStore.getState()
 beforeEach(() => {
   mocks.support.mockReset()
   mocks.subscribe.mockReset().mockResolvedValue({ unsubscribe: () => {} })
   mocks.publishing = false
+  mocks.realRoutes = false
+  mocks.program.mockReset()
   mocks.catalog
     .mockReset()
     .mockReturnValue(['claude', 'codex', 'opencode'].map((agent) => ({ agent, capabilities: {} })))
@@ -87,6 +114,57 @@ beforeEach(() => {
   })
 })
 afterEach(cleanup)
+
+it('bounds alternate candidate route work at N and 10N through the production observation', () => {
+  mocks.realRoutes = true
+  const visits: number[] = []
+  for (const count of [100, 1000]) {
+    const worktreeId = `${TEST_REPO.id}::/work/${count - 1}`
+    const worktrees = Array.from({ length: count }, (_, index) => {
+      const id = `${TEST_REPO.id}::/work/${index}`
+      const worktree = makeWorktree({ id, repoId: TEST_REPO.id, hostId: 'local' })
+      Object.defineProperty(worktree, 'id', { enumerable: true, get: () => {
+        if (mocks.countingCandidate) mocks.candidateVisits++
+        return id
+      } })
+      return worktree
+    })
+    for (const candidate of ['no-cli', 'missing-program', 'usable'] as const) {
+      mocks.program.mockReturnValue(candidate === 'missing-program' ? 'missing' : 'available')
+      mocks.detection.mockReturnValue({ detectedIds: candidate === 'no-cli' ? ['claude', 'codex'] : ['claude', 'codex', 'opencode'] })
+      useAppStore.setState({
+        repos: [TEST_REPO], worktreesByRepo: { [TEST_REPO.id]: worktrees },
+        detectedWorktreesByRepo: {}, activeWorktreeId: worktreeId,
+        activeWorkspaceExecutionHostId: 'local',
+        settings: { ...getDefaultSettings('/home/me'), experimentalNativeChat: true,
+          nativeChatProviders: { opencode: false }, disabledTuiAgents: [] }
+      })
+      mocks.candidateCalls = mocks.candidateVisits = 0
+      const hook = renderHook(() => useAgentMenuObservation(worktreeId, true, { kind: 'local' }))
+      const rows = hook.result.current.model.state === 'settled' ? hook.result.current.model.rows : []
+      const offered = rows.find((row) => row.agent === 'opencode')
+      if (candidate === 'usable') {
+        expect(offered).toMatchObject({ kind: 'cli', chat: true, executionHostId: 'local' })
+        expect(mocks.candidateCalls).toBeGreaterThan(0)
+        mocks.candidateCalls = mocks.candidateVisits = 0
+        hook.rerender()
+        expect(mocks.candidateCalls).toBe(1)
+        expect(mocks.candidateVisits).toBeGreaterThanOrEqual(count)
+        visits.push(mocks.candidateVisits)
+      } else {
+        expect(offered && 'chat' in offered).not.toBe(true)
+        expect(mocks.candidateCalls).toBe(0)
+        expect(mocks.candidateVisits).toBe(0)
+        hook.rerender()
+        expect(mocks.candidateCalls).toBe(0)
+        expect(mocks.candidateVisits).toBe(0)
+      }
+      hook.unmount()
+    }
+  }
+  // The same route code visits a fixed number of inventory passes, independent of inventory size.
+  expect(visits[1]).toBeLessThanOrEqual(visits[0] * 10)
+})
 
 it("reads a publishing host's one snapshot, holding a placeholder only until it lands", async () => {
   mocks.publishing = true
