@@ -464,12 +464,9 @@ function registerLaunch(
   } satisfies StructuredLaunchState)
 }
 
-function agentRowDisabled(label: string): string | null | undefined {
-  return (
-    document
-      .querySelector(`[title="Launch ${label} in a new terminal"]`)
-      ?.getAttribute('aria-disabled') ?? 'false'
-  )
+function agentRowDisabled(label: string): string {
+  const row = screen.getByRole('menuitem', { name: `Launch ${label} in a new terminal` })
+  return row.getAttribute('aria-disabled') ?? 'false'
 }
 
 describe('QuickLaunchAgentMenuItems launches', () => {
