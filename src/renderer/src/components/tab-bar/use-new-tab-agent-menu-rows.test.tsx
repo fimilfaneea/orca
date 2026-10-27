@@ -142,6 +142,20 @@ it('shows an older host from client facts and never asks it per agent', () => {
   expect(mocks.support).not.toHaveBeenCalled()
 })
 
+it('offers a chat on the CLI row of an agent set to open as a CLI', () => {
+  const { settings } = useAppStore.getState()
+  useAppStore.setState({
+    settings: settings && { ...settings, nativeChatProviders: { claude: false } }
+  })
+  const hook = renderHook(() => useNewTabAgentMenuRows('one', true, { kind: 'local' }))
+  const rows = hook.result.current.state === 'settled' ? hook.result.current.rows : []
+  expect(rows.filter((row) => row.agent === 'claude')).toEqual([
+    { kind: 'cli', agent: 'claude', chat: true, executionHostId: 'local' }
+  ])
+  // An agent with no chat on this host keeps a plain CLI row.
+  expect(rows).toContainEqual({ kind: 'cli', agent: 'gemini', executionHostId: 'local' })
+})
+
 it('waits for a real catalog read, then preserves Gemini CLI after failure without retrying', () => {
   mocks.catalog.mockReturnValue(undefined)
   const hook = renderHook(() => useNewTabAgentMenuRows('one', true, { kind: 'local' }))
