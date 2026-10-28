@@ -13,6 +13,8 @@ import {
 import type * as RouteInput from '@/lib/agent-launch-route-input'
 import type * as ChatProgram from '@/lib/host-chat-program'
 import type * as MenuRows from '@/lib/new-tab-agent-menu-rows'
+import type * as ZustandShallow from 'zustand/react/shallow'
+import type * as HostAgentSettingsTransport from '@/components/settings/agent-launch-settings-transport'
 import type { RuntimeEnvironmentStatus } from '../../../../shared/runtime-host-status'
 import { useTabBarCreateMenuController } from './use-tab-bar-create-menu-controller'
 import {
@@ -53,7 +55,7 @@ const mocks = vi.hoisted(() => ({
     >()
 }))
 vi.mock('zustand/react/shallow', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('zustand/react/shallow')>()
+  const actual = await importOriginal<typeof ZustandShallow>()
   return {
     useShallow: <S, U>(selector: (state: S) => U) =>
       actual.useShallow((state: S) => {
@@ -86,8 +88,7 @@ vi.mock('@/lib/new-tab-agent-menu-rows', async (importOriginal) => {
   }
 })
 vi.mock('@/components/settings/agent-launch-settings-transport', async (importOriginal) => {
-  const actual =
-    await importOriginal<typeof import('@/components/settings/agent-launch-settings-transport')>()
+  const actual = await importOriginal<typeof HostAgentSettingsTransport>()
   return { ...actual, readHostAgentLaunchSettings: vi.fn().mockResolvedValue(null) }
 })
 vi.mock('@/runtime/runtime-rpc-subscribe', () => ({ subscribeRuntimeRpc: mocks.subscribe }))
@@ -154,6 +155,7 @@ import {
   type AgentMenuRowsTarget,
   type NewTabAgentMenuModel
 } from './use-new-tab-agent-menu-rows'
+const actualRouteInput = await vi.importActual<typeof RouteInput>('@/lib/agent-launch-route-input')
 const initial = useAppStore.getState()
 beforeEach(() => {
   mocks.support.mockReset()
@@ -541,7 +543,6 @@ it('preserves per-agent published answers and direct route inputs across context
   mocks.publishing = true
   setLocalRuntimeCapabilitiesForTests([CHAT, CLIENT, CATALOG, AVAILABILITY])
   mocks.detection.mockReturnValue({ detectedIds: ['claude'] })
-  const actual = await vi.importActual<typeof RouteInput>('@/lib/agent-launch-route-input')
   const status: RuntimeEnvironmentStatus = {
     checkedAt: 1,
     status: {
@@ -613,7 +614,7 @@ it('preserves per-agent published answers and direct route inputs across context
             const before = mocks.routes.length
             const selection = hook.result.current.selectionFor(agent)
             expect(mocks.routes.length).toBe(before)
-            const expected = actual.buildAgentLaunchRouteInput(useAppStore.getState(), {
+            const expected = actualRouteInput.buildAgentLaunchRouteInput(useAppStore.getState(), {
               agent,
               workspace: target.workspace,
               ...(launchCwd ? { tuiCustomization: { cwd: launchCwd } } : {})
