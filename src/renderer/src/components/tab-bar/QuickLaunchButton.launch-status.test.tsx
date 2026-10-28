@@ -465,7 +465,8 @@ function registerLaunch(
 }
 
 function agentRowDisabled(label: string): string {
-  const row = screen.getByRole('menuitem', { name: `Launch ${label} in a new terminal` })
+  const row = screen.getByTitle(`Launch ${label} in a new terminal`)
+  expect(row.getAttribute('role')).toBe('menuitem')
   return row.getAttribute('aria-disabled') ?? 'false'
 }
 

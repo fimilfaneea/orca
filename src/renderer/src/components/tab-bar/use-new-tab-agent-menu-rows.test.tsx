@@ -2,10 +2,23 @@
 import { act, cleanup, renderHook } from '@testing-library/react'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { useAppStore } from '@/store'
+import type { TuiAgent } from '../../../../shared/tui-agent'
+import { useAgentDetectionTargetForWorktree } from '@/hooks/useAgentDetectionTarget'
 import { getDefaultSettings } from '../../../../shared/constants'
-import { makeWorktree, TEST_REPO } from '@/store/slices/worktrees-slice-test-fixtures'
+import {
+  makeFolderWorkspace,
+  makeWorktree,
+  TEST_REPO
+} from '@/store/slices/worktrees-slice-test-fixtures'
 import type * as RouteInput from '@/lib/agent-launch-route-input'
 import type * as ChatProgram from '@/lib/host-chat-program'
+import type * as MenuRows from '@/lib/new-tab-agent-menu-rows'
+import type { RuntimeEnvironmentStatus } from '../../../../shared/runtime-host-status'
+import { useTabBarCreateMenuController } from './use-tab-bar-create-menu-controller'
+import {
+  buildTabAgentLaunchOptionsFromRows,
+  findMatchingTabAgentLaunchOptions
+} from './tab-agent-launch-options'
 import {
   readLocalRuntimeCapabilitiesOrUnknown,
   setLocalRuntimeCapabilitiesForTests
@@ -25,11 +38,58 @@ const mocks = vi.hoisted(() => ({
   load: vi.fn(),
   detection: vi.fn(),
   realRoutes: false,
-  candidateCalls: 0,
-  candidateVisits: 0,
-  countingCandidate: false,
-  program: vi.fn<() => ChatProgram.ChatProgramObservation | undefined>()
+  routes: Array<RouteInput.AgentLaunchRouteArgs>(),
+  answers: Array<Parameters<typeof MenuRows.hostChatAnswer>[0]>(),
+  selectors: 0,
+  records: 0,
+  lists: 0,
+  metadata: 0,
+  countedLists: new WeakSet<object>(),
+  program:
+    vi.fn<
+      (
+        ...args: Parameters<typeof ChatProgram.readChatProgram>
+      ) => ChatProgram.ChatProgramObservation | undefined
+    >()
 }))
+vi.mock('zustand/react/shallow', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('zustand/react/shallow')>()
+  return {
+    useShallow: <S, U>(selector: (state: S) => U) =>
+      actual.useShallow((state: S) => {
+        mocks.selectors++
+        return selector(state)
+      })
+  }
+})
+vi.mock('@/lib/new-tab-agent-menu-rows', async (importOriginal) => {
+  const actual = await importOriginal<typeof MenuRows>()
+  return {
+    ...actual,
+    buildNewTabAgentMenuRows: (...args: Parameters<typeof actual.buildNewTabAgentMenuRows>) => {
+      const rows = actual.buildNewTabAgentMenuRows(...args)
+      mocks.metadata += rows.length
+      return rows
+    },
+    hostChatAnswer: (input: Parameters<typeof actual.hostChatAnswer>[0]) => {
+      mocks.answers.push(input)
+      if (mocks.realRoutes) {
+        if (input.hostCapabilities) {
+          counted(input.hostCapabilities)
+        }
+        if (input.hostStructuredAgents) {
+          counted(input.hostStructuredAgents)
+        }
+      }
+      return actual.hostChatAnswer(input)
+    }
+  }
+})
+vi.mock('@/components/settings/agent-launch-settings-transport', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('@/components/settings/agent-launch-settings-transport')>()
+  return { ...actual, readHostAgentLaunchSettings: vi.fn().mockResolvedValue(null) }
+})
 vi.mock('@/runtime/runtime-rpc-subscribe', () => ({ subscribeRuntimeRpc: mocks.subscribe }))
 vi.mock('@/lib/structured-agent-session-host-admission', () => ({
   askHostCreateSupport: mocks.support
@@ -50,26 +110,22 @@ vi.mock('@/runtime/host-structured-agents', () => ({
 vi.mock('@/lib/agent-launch-route-input', async (importOriginal) => {
   const actual = await importOriginal<typeof RouteInput>()
   return {
-    workspaceKindForWorktreeId: () => 'git-worktree',
-    resolveAgentLaunchHost: () => ({
-      executionHostId: 'local',
-      hostCapabilities:
-        readLocalRuntimeCapabilitiesOrUnknown() === null
-          ? null
-          : [CHAT, CLIENT, CATALOG, ...(mocks.publishing ? [AVAILABILITY] : [])]
-    }),
+    ...actual,
+    resolveAgentLaunchHost: (...args: Parameters<typeof actual.resolveAgentLaunchHost>) =>
+      mocks.realRoutes
+        ? actual.resolveAgentLaunchHost(...args)
+        : {
+            executionHostId: 'local',
+            hostCapabilities:
+              readLocalRuntimeCapabilitiesOrUnknown() === null
+                ? null
+                : [CHAT, CLIENT, CATALOG, ...(mocks.publishing ? [AVAILABILITY] : [])]
+          },
     buildAgentLaunchRouteInput: (...args: Parameters<typeof actual.buildAgentLaunchRouteInput>) => {
       const [state, { agent }] = args
       if (mocks.realRoutes) {
-        mocks.countingCandidate = agent === 'opencode'
-        if (mocks.countingCandidate) {
-          mocks.candidateCalls++
-        }
-        try {
-          return actual.buildAgentLaunchRouteInput(state, args[1])
-        } finally {
-          mocks.countingCandidate = false
-        }
+        mocks.routes.push(args[1])
+        return actual.buildAgentLaunchRouteInput(state, args[1])
       }
       return {
         agent,
@@ -89,10 +145,15 @@ vi.mock('@/lib/host-chat-program', async (importOriginal) => {
   return {
     ...actual,
     readChatProgram: (...args: Parameters<typeof actual.readChatProgram>) =>
-      mocks.program() ?? actual.readChatProgram(...args)
+      mocks.program(...args) ?? actual.readChatProgram(...args)
   }
 })
-import { useAgentMenuObservation, useNewTabAgentMenuRows } from './use-new-tab-agent-menu-rows'
+import {
+  useAgentMenuObservation,
+  useNewTabAgentMenuRows,
+  type AgentMenuRowsTarget,
+  type NewTabAgentMenuModel
+} from './use-new-tab-agent-menu-rows'
 const initial = useAppStore.getState()
 beforeEach(() => {
   mocks.support.mockReset()
@@ -123,69 +184,236 @@ beforeEach(() => {
 })
 afterEach(cleanup)
 
-it('bounds alternate candidate route work at N and 10N through the production observation', () => {
+function counted<T extends readonly unknown[]>(values: T): T {
+  if (mocks.countedLists.has(values)) {
+    return values
+  }
+  mocks.countedLists.add(values)
+  values.forEach((value, index) =>
+    Object.defineProperty(values, index, {
+      get: () => {
+        mocks.lists++
+        return value
+      }
+    })
+  )
+  return values
+}
+function resetWork(): void {
+  mocks.routes.length =
+    mocks.answers.length =
+    mocks.selectors =
+    mocks.records =
+    mocks.lists =
+    mocks.metadata =
+      0
+  mocks.program.mockClear()
+  mocks.catalog.mockClear()
+}
+function work() {
+  return {
+    routes: mocks.routes.length,
+    selectors: mocks.selectors,
+    records: mocks.records,
+    answers: mocks.answers.length,
+    programs: mocks.program.mock.calls.length,
+    lists: mocks.lists,
+    catalogs: mocks.catalog.mock.calls.length,
+    metadata: mocks.metadata
+  }
+}
+
+type OwnerProps = { target: string | AgentMenuRowsTarget; phase: string }
+type OwnerResult = {
+  model: NewTabAgentMenuModel
+  selectionFor?: ReturnType<typeof useAgentMenuObservation>['selectionFor']
+  controller?: ReturnType<typeof useTabBarCreateMenuController>
+}
+function useMenuOwner({ target }: OwnerProps): OwnerResult {
+  return { model: useNewTabAgentMenuRows(target, true, { kind: 'local' }) }
+}
+function usePickerOwner({ target }: OwnerProps): OwnerResult {
+  return useAgentMenuObservation(target, true, { kind: 'local' })
+}
+function useTabOwner({ target, phase }: OwnerProps): OwnerResult {
+  const controller = useTabBarCreateMenuController({
+    worktreeId: typeof target === 'string' ? target : (target.workspace.worktreeId ?? ''),
+    resolvedGroupId: 'group',
+    terminalOnly: false,
+    showAgentLaunchItems: phase !== 'hidden',
+    mobileEmulatorEnabled: false,
+    managedBrowserCreationEnabled: false,
+    mobileEmulatorCreationEnabled: false,
+    workspaceHasSimulatorTab: false,
+    showWindowsShellMenu: false,
+    projectRuntimeShellMenuMode: null,
+    defaultWindowsShell: 'powershell',
+    defaultWindowsPowerShellImplementation: 'auto',
+    agentDetectionTarget: { kind: 'local' },
+    windowsTerminalCapabilities: {
+      wslAvailable: false,
+      wslDistros: [],
+      pwshAvailable: false,
+      gitBashAvailable: false,
+      hostPlatform: null,
+      isLoading: false
+    },
+    onNewTerminalTab: () => {},
+    onNewBrowserTab: () => {}
+  })
+  return { model: controller.agentMenu, controller }
+}
+
+it('shares real answer preparation at N and 10N across candidates, owners and selections', async () => {
   mocks.realRoutes = true
-  const visits: number[] = []
+  const candidates = ['opencode', 'pi', 'omp'] as const
+  mocks.catalog.mockReturnValue(
+    counted(['claude', 'codex', ...candidates].map((agent) => ({ agent, capabilities: {} })))
+  )
+  const previous = new Map<string, ReturnType<typeof work>>()
   for (const count of [100, 1000]) {
     const worktreeId = `${TEST_REPO.id}::/work/${count - 1}`
     const worktrees = Array.from({ length: count }, (_, index) => {
       const id = `${TEST_REPO.id}::/work/${index}`
-      const worktree = makeWorktree({ id, repoId: TEST_REPO.id, hostId: 'local' })
-      Object.defineProperty(worktree, 'id', {
-        enumerable: true,
-        get: () => {
-          if (mocks.countingCandidate) {
-            mocks.candidateVisits++
-          }
-          return id
+      return Object.defineProperty(
+        makeWorktree({ id, path: `/work/${index}`, repoId: TEST_REPO.id, hostId: 'local' }),
+        'id',
+        {
+          get: () => {
+            mocks.records++
+            return id
+          },
+          enumerable: true
         }
-      })
-      return worktree
+      )
     })
-    for (const candidate of ['no-cli', 'missing-program', 'usable'] as const) {
-      mocks.program.mockReturnValue(candidate === 'missing-program' ? 'missing' : 'available')
-      mocks.detection.mockReturnValue({
-        detectedIds: candidate === 'no-cli' ? ['claude', 'codex'] : ['claude', 'codex', 'opencode']
-      })
-      useAppStore.setState({
-        repos: [TEST_REPO],
-        worktreesByRepo: { [TEST_REPO.id]: worktrees },
-        detectedWorktreesByRepo: {},
-        activeWorktreeId: worktreeId,
-        activeWorkspaceExecutionHostId: 'local',
-        settings: {
-          ...getDefaultSettings('/home/me'),
-          experimentalNativeChat: true,
-          nativeChatProviders: { opencode: false },
-          disabledTuiAgents: []
+    for (const useOwner of [useMenuOwner, usePickerOwner, useTabOwner]) {
+      for (const launchCwd of useOwner === useTabOwner ? [undefined] : [undefined, '.']) {
+        const zero = new Map<string, ReturnType<typeof work>>()
+        for (const viable of [false, true]) {
+          const inventory: TuiAgent[] = ['claude', 'codex', ...(viable ? candidates : [])]
+          const ids = counted(inventory)
+          mocks.detection.mockReturnValue({ detectedIds: ids })
+          mocks.program.mockReset()
+          useAppStore.setState({
+            repos: [TEST_REPO],
+            worktreesByRepo: { [TEST_REPO.id]: worktrees },
+            detectedWorktreesByRepo: {},
+            activeWorktreeId: worktreeId,
+            activeWorkspaceExecutionHostId: 'local',
+            settings: {
+              ...getDefaultSettings('/home/me'),
+              experimentalNativeChat: true,
+              nativeChatProviders: { opencode: false, pi: false, omp: false },
+              disabledTuiAgents: []
+            }
+          })
+          resetWork()
+          const target = launchCwd
+            ? { workspace: { kind: 'git-worktree' as const, worktreeId }, launchCwd }
+            : worktreeId
+          const hook = renderHook(useOwner, { initialProps: { target, phase: 'static' } })
+          console.info('agent menu cold work', {
+            owner: useOwner.name,
+            count,
+            launchCwd,
+            viable,
+            work: work()
+          })
+          await act(async () => {})
+          const phases =
+            useOwner === useTabOwner
+              ? ['static', 'search', 'closed', 'hidden', 'loading', 'missing-program', 'settled']
+              : useOwner === usePickerOwner
+                ? ['static', 'loading', 'missing-program']
+                : ['static']
+          for (const phase of phases) {
+            if (phase === 'hidden') {
+              act(() => useAppStore.setState({ activeWorktreeId: 'elsewhere' }))
+            }
+            mocks.program.mockImplementation((_state, agent) =>
+              phase === 'missing-program' && agent !== 'claude' && agent !== 'codex'
+                ? 'missing'
+                : undefined
+            )
+            act(() => useAppStore.setState({ detectedAgentIds: phase === 'loading' ? null : ids }))
+            mocks.detection.mockReturnValue({ detectedIds: phase === 'loading' ? null : ids })
+            const controller = hook.result.current.controller
+            if (controller) {
+              act(() => {
+                controller.setNewTabMenuOpen(!['closed', 'hidden'].includes(phase))
+                controller.setCreateMenuQuery(phase === 'search' ? 'opencode' : '')
+              })
+            }
+            hook.rerender({ target, phase })
+            resetWork()
+            hook.rerender({ target, phase })
+            const measured = work(),
+              { model, selectionFor } = hook.result.current
+            expect(measured.routes).toBe(measured.selectors + 1 + Number(Boolean(launchCwd)))
+            expect(measured.records).toBeGreaterThanOrEqual(count * measured.routes)
+            expect(measured.records).toBeLessThanOrEqual(count * (measured.routes + 8))
+            expect(measured.answers).toBe(
+              4 +
+                (viable && !['loading', 'missing-program'].includes(phase) ? candidates.length : 0)
+            )
+            expect(measured.metadata).toBe(
+              2 + (viable && phase !== 'loading' ? candidates.length : 0)
+            )
+            expect(measured.programs).toBeLessThanOrEqual(6 * (2 + candidates.length))
+            expect(measured.lists + measured.catalogs).toBeLessThanOrEqual(
+              200 * (measured.selectors + 1)
+            )
+            if (phase !== 'loading') {
+              expect(model.state).toBe('settled')
+              const rows = model.state === 'settled' ? model.rows : []
+              expect(rows.filter((row) => row.kind === 'cli' && row.chat)).toHaveLength(
+                viable && phase !== 'missing-program' ? candidates.length : 0
+              )
+              expect(rows).toContainEqual({
+                kind: 'chat',
+                agent: 'codex',
+                executionHostId: 'local'
+              })
+              const search = findMatchingTabAgentLaunchOptions(
+                'opencode',
+                buildTabAgentLaunchOptionsFromRows(rows)
+              )
+              expect(search.map((option) => option.row?.kind)).toEqual(viable ? ['cli'] : [])
+            } else {
+              expect(model.state).toBe('loading')
+            }
+            for (const agent of ['codex', ...candidates] as const) {
+              selectionFor?.(agent, 'terminal')
+            }
+            expect(mocks.routes.length).toBe(measured.routes)
+            expect(mocks.records).toBe(measured.records)
+            expect(mocks.answers.length - measured.answers).toBe(selectionFor ? 4 : 0)
+            if (!viable) {
+              zero.set(phase, measured)
+            } else {
+              expect(measured.records).toBe(zero.get(phase)?.records)
+            }
+            const key = `${useOwner.name}:${launchCwd}:${viable}:${phase}`,
+              prior = previous.get(key)
+            if (prior) {
+              expect(measured.records).toBeLessThanOrEqual(prior.records * 10)
+            }
+            previous.set(key, measured)
+            console.info('agent menu work', {
+              owner: useOwner.name,
+              count,
+              launchCwd,
+              viable,
+              phase,
+              measured
+            })
+          }
+          hook.unmount()
         }
-      })
-      mocks.candidateCalls = mocks.candidateVisits = 0
-      const hook = renderHook(() => useAgentMenuObservation(worktreeId, true, { kind: 'local' }))
-      const rows =
-        hook.result.current.model.state === 'settled' ? hook.result.current.model.rows : []
-      const offered = rows.find((row) => row.agent === 'opencode')
-      if (candidate === 'usable') {
-        expect(offered).toMatchObject({ kind: 'cli', chat: true, executionHostId: 'local' })
-        expect(mocks.candidateCalls).toBeGreaterThan(0)
-        mocks.candidateCalls = mocks.candidateVisits = 0
-        hook.rerender()
-        expect(mocks.candidateCalls).toBe(1)
-        expect(mocks.candidateVisits).toBeGreaterThanOrEqual(count)
-        visits.push(mocks.candidateVisits)
-      } else {
-        expect(offered && 'chat' in offered).not.toBe(true)
-        expect(mocks.candidateCalls).toBe(0)
-        expect(mocks.candidateVisits).toBe(0)
-        hook.rerender()
-        expect(mocks.candidateCalls).toBe(0)
-        expect(mocks.candidateVisits).toBe(0)
       }
-      hook.unmount()
     }
   }
-  // The same route code visits a fixed number of inventory passes, independent of inventory size.
-  expect(visits[1]).toBeLessThanOrEqual(visits[0] * 10)
 })
 
 it("reads a publishing host's one snapshot, holding a placeholder only until it lands", async () => {
@@ -308,20 +536,110 @@ it('holds initial capability acquisition, then exposes truthful failure and know
 })
 
 // Last: the host's published snapshot is module state that later cases would read.
-it('picks a host-run chat without its CLI, but never its terminal', () => {
+it('preserves per-agent published answers and direct route inputs across context changes', async () => {
+  mocks.realRoutes = true
   mocks.publishing = true
+  setLocalRuntimeCapabilitiesForTests([CHAT, CLIENT, CATALOG, AVAILABILITY])
   mocks.detection.mockReturnValue({ detectedIds: ['claude'] })
-  const hook = renderHook(() => useAgentMenuObservation('one', true, { kind: 'local' }))
-  act(() =>
-    mocks.subscribe.mock.calls[0][3].onEvent({
-      type: 'availability',
-      agents: [{ agent: 'codex', state: 'available', chatProgram: 'installable' }]
-    })
+  const actual = await vi.importActual<typeof RouteInput>('@/lib/agent-launch-route-input')
+  const status: RuntimeEnvironmentStatus = {
+    checkedAt: 1,
+    status: {
+      runtimeId: 'prepared-context',
+      capabilities: [CHAT, CLIENT, CATALOG, AVAILABILITY],
+      rendererGraphEpoch: 0,
+      graphStatus: 'ready',
+      authoritativeWindowId: null,
+      liveTabCount: 0,
+      liveLeafCount: 0
+    }
+  }
+  const hook = renderHook(
+    ({ target }: { target: AgentMenuRowsTarget }) => {
+      const detection = useAgentDetectionTargetForWorktree(target.workspace.worktreeId ?? null)
+      return useAgentMenuObservation(target, true, detection)
+    },
+    { initialProps: { target: { workspace: { kind: 'git-worktree', worktreeId: 'one' } } } }
   )
-  const { model, selectionFor } = hook.result.current
-  const rows = model.state === 'settled' ? model.rows : []
-  expect(rows).toContainEqual({ kind: 'chat', agent: 'codex', executionHostId: 'local' })
-  const chat = selectionFor('codex', 'chat')
-  expect(chat.ready && chat.choice?.route).toBe('structured-native-chat')
-  expect(selectionFor('codex', 'terminal').ready).toBe(false)
+  for (const host of ['local', 'runtime:prepared'] as const) {
+    for (const folder of [false, true]) {
+      const worktreeId = folder ? 'folder:f1' : 'one'
+      act(() =>
+        useAppStore.setState({
+          activeWorktreeId: worktreeId,
+          activeWorkspaceExecutionHostId: host,
+          worktreesByRepo: {
+            [TEST_REPO.id]: [
+              makeWorktree({ id: 'one', repoId: TEST_REPO.id, hostId: host, path: '/work' })
+            ]
+          },
+          folderWorkspaces: [
+            makeFolderWorkspace({ id: 'f1', executionHostId: host, folderPath: '/work' })
+          ],
+          repos: [TEST_REPO],
+          runtimeStatusByEnvironmentId: new Map([['prepared', status]])
+        })
+      )
+      for (const launchCwd of [undefined, '/work/.', '/work/sub']) {
+        const target: AgentMenuRowsTarget = {
+          workspace: { kind: folder ? 'folder' : 'git-worktree', worktreeId },
+          launchCwd
+        }
+        mocks.program.mockClear()
+        hook.rerender({ target })
+        await act(async () => {})
+        expect(mocks.program.mock.calls.length).toBeGreaterThan(0)
+        for (const [, , baseline] of mocks.program.mock.calls) {
+          expect(baseline).toHaveProperty('startsOutsideWorkspaceRoot', false)
+        }
+        for (const refused of ['claude', 'codex'] as const) {
+          const stream = mocks.subscribe.mock.calls.findLast((call) =>
+            host === 'local' ? call[0].kind === 'local' : call[0].environmentId === 'prepared'
+          )
+          expect(stream).toBeDefined()
+          act(() =>
+            stream![3].onEvent({
+              type: 'availability',
+              agents: ['claude', 'codex'].map((agent) => ({
+                agent,
+                state: agent === refused ? 'refused' : 'available',
+                reason: 'agent',
+                chatProgram: 'installable'
+              }))
+            })
+          )
+          for (const agent of ['claude', 'codex'] as const) {
+            mocks.answers.length = 0
+            const before = mocks.routes.length
+            const selection = hook.result.current.selectionFor(agent)
+            expect(mocks.routes.length).toBe(before)
+            const expected = actual.buildAgentLaunchRouteInput(useAppStore.getState(), {
+              agent,
+              workspace: target.workspace,
+              ...(launchCwd ? { tuiCustomization: { cwd: launchCwd } } : {})
+            })
+            expected.hostStructuredAgents = ['claude', 'codex']
+            expect(mocks.answers).toEqual([expected])
+            expect(selection.ready).toBe(
+              agent === 'claude' || (launchCwd !== '/work/sub' && agent !== refused)
+            )
+            expect(selection.choice).toMatchObject({
+              agent,
+              executionHostId: host,
+              route:
+                launchCwd === '/work/sub' || agent === refused
+                  ? 'terminal-tui'
+                  : 'structured-native-chat'
+            })
+          }
+          if (!launchCwd && refused === 'claude') {
+            expect(
+              hook.result.current.model.state === 'settled' && hook.result.current.model.rows
+            ).toContainEqual({ kind: 'chat', agent: 'codex', executionHostId: host })
+            expect(hook.result.current.selectionFor('codex', 'terminal').ready).toBe(false)
+          }
+        }
+      }
+    }
+  }
 })
