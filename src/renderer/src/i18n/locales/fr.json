@@ -12085,25 +12085,10 @@
           "leaveToTerminalLabel": "Départ au terminal"
         },
         "PluginConsentDialog": {
-          "workerTrust": "Worker en arrière-plan — exécute son propre processus",
-          "instructionalTrust": "Contenu instructif — s'exécute plus tard sous l'autorité de l'utilisateur ou d'un agent",
-          "declarativeTrust": "Contenu déclaratif — aucun code de plugin",
-          "panelTrust": "Contenu de panneau ou intégré à l'hôte — aucun processus worker",
-          "trustShortWorker": "Worker",
-          "trustShortInstructional": "Instructif",
-          "trustShortPanel": "Panneau",
-          "trustShortDeclarative": "Déclaratif",
-          "reviewTitle": "Examiner le plugin",
-          "title": "Examiner les autorisations",
-          "mixedTitle": "Examiner l'accès et le contenu",
-          "instructionalTitle": "Examiner le contenu du plugin",
-          "subtitle": "{{value0}} v{{value1}} · {{value2}}",
           "reconsent": "Modifié depuis votre approbation",
-          "capabilities": "Ce plugin peut",
           "warning": "Accès complet à vos fichiers, au réseau et aux processus",
           "instructionalWarning": "Ses commandes peuvent agir pour vous ou vos agents",
           "declarativeWarning": "Contenu uniquement. Aucun code ne s'exécute.",
-          "keepDisabled": "Garder désactivé",
           "enable": "Activer le plugin",
           "capability": {
             "workspaceRead": "Lire les noms, branches et terminaux des espaces de travail",
@@ -12114,8 +12099,7 @@
             "agentsRead": "Être notifié quand le statut d'un agent change",
             "terminalRun": "Exécuter des commandes dans vos terminaux, y compris SSH"
           },
-          "decisionFailed": "Impossible d'enregistrer la décision d'autorisation. Réessayez.",
-          "whatChanged": "Ce qui a changé"
+          "decisionFailed": "Impossible d'enregistrer la décision d'autorisation. Réessayez."
         },
         "PluginConsentProvenance": {
           "official": "Officiel",
@@ -12173,7 +12157,6 @@
           "loading": "Chargement des plugins du catalogue…",
           "tryAgain": "Réessayer",
           "noSourcesTitle": "Aucun catalogue configuré",
-          "noSources": "Ajoutez un catalogue Git officiel, communautaire ou privé pour parcourir les plugins.",
           "addSource": "Ajouter un catalogue",
           "noResultsTitle": "Aucun plugin correspondant",
           "noResults": "Aucun plugin du catalogue ne correspond à cette recherche.",
@@ -12182,12 +12165,7 @@
           "empty": "Les catalogues configurés ne listent aucun plugin."
         },
         "PluginMarketplaceListingRow": {
-          "official": "Officiel",
-          "installed": "Installés",
-          "noDescription": "Aucune description fournie.",
           "blocked": "Bloqué par la liste de sécurité d'Orca : {{value0}}",
-          "blockedAction": "Bloquée",
-          "checkUpdate": "Vérifier les mises à jour",
           "install": "Installer"
         },
         "PluginMarketplaceSourceDialog": {
@@ -12228,7 +12206,6 @@
         },
         "PluginsSettingsSection": {
           "systemLabel": "Système de plugins",
-          "systemDescription": "Rien ne s'exécute avant votre examen et votre activation.",
           "loading": "Chargement des plugins…",
           "noInstalledResultsTitle": "Aucun plugin correspondant",
           "noInstalledResults": "Aucun plugin installé ne correspond à cette recherche.",
@@ -12255,35 +12232,16 @@
           "enable": "Activer"
         },
         "PluginSettingsRow": {
-          "blocked": "Bloquée",
-          "needsReview": "En attente de relecture",
-          "restarting": "Redémarrage",
-          "invalid": "Non valide",
-          "error": "Erreur",
-          "disabled": "Désactivé",
-          "running": "En cours",
-          "enabled": "Activé",
           "loadingLogs": "Chargement des logs…",
           "noLogs": "Aucun journal pour l'instant",
           "logCount": "{{value0}} dernières lignes",
-          "reviewAndEnable": "Examiner & activer",
-          "official": "Officiel",
-          "dev": "Dev",
           "bundled": "Intégré",
-          "noDescription": "Aucune description fournie.",
           "killListMessage": "La liste de sécurité d'Orca a désactivé ce plugin : {{value0}}",
-          "viewAdvisory": "Consulter l'avis de sécurité",
-          "runtimeError": "Arrêté après une erreur. Consultez les journaux pour plus de détails.",
-          "restartCount": " · {{value0}} redémarrages",
           "moreActions": "Plus d'actions pour {{value0}}",
-          "hideLogs": "Masquer les logs",
           "viewLogs": "Afficher les logs",
-          "rollback": "Restaurer",
-          "remove": "Supprimer",
           "disableLabel": "Désactiver {{value0}}",
           "enableLabel": "Activer {{value0}}",
           "invalidPluginError": "Les fichiers de ce plugin ne sont pas valides. Corrigez-les, puis actualisez.",
-          "languageCoverage": "{{value0}} traduit à {{value1}} %",
           "syntaxFailed": "Coloration arrêtée : cette grammaire a échoué."
         },
         "PluginVmRecipeConsentPreview": {
@@ -13340,7 +13298,6 @@
           "installed": "Installés",
           "installedFailedTitle": "Impossible de lire vos plugins installés.",
           "updatesTitle": "Mises à jour",
-          "sourcesLabel": "Sources du catalogue",
           "refreshLabel": "Actualiser les catalogues",
           "noResultsTitle": "Aucun plugin ne correspond à « {{value0}} »",
           "noneInstalledTitle": "Aucun plugin installé",
@@ -13356,11 +13313,9 @@
           "stoppedTitle": "Arrêté après une erreur",
           "stoppedBody": "Il plantait sans cesse. Redémarrez pour réessayer.",
           "invalidTitle": "Orca ne peut pas charger ce plugin",
-          "reviewBody": "Vérifiez ce qu’il ajoute et ce à quoi il peut accéder, puis activez-le. Rien ne s’exécute avant.",
           "needsOrcaTitle": "Nécessite Orca {{value0}} ou une version ultérieure",
           "needsOrcaBody": "Vous avez Orca {{value0}}.",
           "back": "Plugins",
-          "install": "Installer…",
           "info": "Informations",
           "version": "Version",
           "latest": "Dernière",
@@ -13368,7 +13323,6 @@
           "requiresValue": "Orca {{value0}} ou ultérieur",
           "categories": "Catégories",
           "pluginId": "ID du plugin",
-          "content": "Contenu",
           "repository": "Dépôt",
           "stoppedDataBody": "Impossible de charger ses fichiers. Redémarrez pour réessayer.",
           "newerBody": "Le catalogue a changé pendant votre visite.",
@@ -13391,7 +13345,6 @@
           "recipe": "Recette de machine",
           "access": "Peut accéder à",
           "accessLoading": "Lecture du plugin…",
-          "noAccess": "Rien en dehors de ses propres fichiers",
           "logs": "Journaux",
           "copyLogs": "Copier",
           "accessFailed": "Impossible de lire ses accès",
@@ -13407,33 +13360,24 @@
           "viewError": "Voir l’erreur",
           "copyId": "Copier l’ID du plugin",
           "checkUpdate": "Rechercher une mise à jour",
-          "rollback": "Revenir en arrière…",
           "bundledWithOrca": "Fourni avec Orca",
           "installName": "Installer {{value0}}",
           "copied": "ID du plugin copié",
           "copyFailed": "Impossible de copier l’ID du plugin.",
-          "stopped": "Arrêté",
-          "cantLoad": "Chargement impossible",
-          "on": "Activé",
           "details": "Détails",
-          "enterKey": "Entrée",
           "unverified": "Non vérifié",
           "crashedOnce": "Un plantage",
           "updateAvailable": "mise à jour {{value0}} disponible",
           "updateLabel": "Mettre à jour {{value0}} vers {{value1}}",
           "update": "Mettre à jour vers {{value0}}",
           "needsOrca": "Nécessite Orca {{value0}}",
-          "off": "Désactivé",
           "rollbackTo": "Revenir à {{value0}}…",
           "dataLoadFailed": "Impossible de charger ses fichiers"
         },
         "PluginSettingsOverview": {
           "offTitle": "Les plugins sont désactivés",
-          "offBody": "Rien de vos plugins ne s’exécute. Activez-les pour parcourir le catalogue et utiliser ce que vous avez installé.",
           "turnOn": "Activer les plugins",
-          "systemDescription": "Désactive tous les plugins d’un coup. Rien ne s’exécute tant que vous ne l’avez pas vérifié et activé.",
-          "pausedCount": "{{value0}} en pause",
-          "pausedUnknown": "Vos plugins installés sont en pause et reviendront quand vous activerez les plugins."
+          "pausedCount": "{{value0}} en pause"
         },
         "PluginFilterPopover": {
           "label": "Filtrer les plugins",
@@ -13476,8 +13420,7 @@
           "homepage": "Page d’accueil",
           "whatsNew": "Nouveautés",
           "hashCopied": "Empreinte du contenu copiée",
-          "hashCopyFailed": "Impossible de copier l’empreinte.",
-          "copyHash": "Copier l’empreinte du contenu {{value0}}"
+          "hashCopyFailed": "Impossible de copier l’empreinte."
         },
         "PluginListEmptyStates": {
           "noFilterMatches": "Aucun plugin ne correspond à ces filtres",
@@ -13518,6 +13461,16 @@
           "label": "Alpha :",
           "body": "L’interface des plugins peut changer. Attendez-vous à des nuances.",
           "dismiss": "Ignorer l’avis Alpha"
+        },
+        "PluginStatus": {
+          "needsReview": "En attente de relecture",
+          "restarting": "Redémarrage",
+          "stopped": "Arrêté",
+          "cantLoad": "Chargement impossible",
+          "off": "Désactivé",
+          "running": "En cours",
+          "on": "Activé",
+          "blocked": "Bloquée"
         }
       },
       "right": {

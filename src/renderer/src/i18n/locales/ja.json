@@ -11934,25 +11934,10 @@
           "description": "ターミナル、チャット、Markdown のリンクを、クリックした場所からフォーカスを移さずにブラウザーで開きます。"
         },
         "PluginConsentDialog": {
-          "workerTrust": "バックグラウンドワーカー — 自身のプロセスを実行",
-          "instructionalTrust": "インストラクショナルコンテンツ — ユーザーまたは Agent の権限で後から実行",
-          "declarativeTrust": "宣言型コンテンツ — プラグインコードなし",
-          "panelTrust": "パネルまたはホスト統合コンテンツ — ワーカープロセスなし",
-          "trustShortWorker": "ワーカー",
-          "trustShortInstructional": "インストラクショナル",
-          "trustShortPanel": "パネル",
-          "trustShortDeclarative": "宣言型",
-          "reviewTitle": "プラグインを確認",
-          "title": "権限を確認",
-          "mixedTitle": "アクセスとコンテンツを確認",
-          "instructionalTitle": "プラグインコンテンツを確認",
-          "subtitle": "{{value0}} v{{value1}} · {{value2}}",
           "reconsent": "承認後に変更されました",
-          "capabilities": "このプラグインは",
           "warning": "ファイル、ネットワーク、プロセスへのフルアクセス",
           "instructionalWarning": "コマンドがあなたや Agent の代わりに動作できます",
           "declarativeWarning": "コンテンツのみ。コードは実行されません。",
-          "keepDisabled": "無効のまま維持",
           "enable": "プラグインを有効にする",
           "capability": {
             "workspaceRead": "ワークスペースの名前・ブランチ・ターミナルを読み取り",
@@ -11963,8 +11948,7 @@
             "agentsRead": "Agent ステータスが変更されたときに通知を受ける",
             "terminalRun": "ターミナルでコマンドを実行 (SSH を含む)"
           },
-          "decisionFailed": "権限の選択を保存できませんでした。再試行してください。",
-          "whatChanged": "変更点"
+          "decisionFailed": "権限の選択を保存できませんでした。再試行してください。"
         },
         "PluginConsentProvenance": {
           "official": "公式",
@@ -12022,7 +12006,6 @@
           "loading": "カタログのプラグインを読み込み中…",
           "tryAgain": "再試行",
           "noSourcesTitle": "カタログ未設定",
-          "noSources": "公式、コミュニティ、またはプライベート Git カタログを追加してプラグインを参照。",
           "addSource": "カタログを追加",
           "noResultsTitle": "一致するプラグインなし",
           "noResults": "この検索に一致するカタログのプラグインはありません。",
@@ -12031,12 +12014,7 @@
           "empty": "設定されたカタログにはプラグインがリストされていません。"
         },
         "PluginMarketplaceListingRow": {
-          "official": "公式",
-          "installed": "インストール済み",
-          "noDescription": "説明はありません。",
           "blocked": "Orca の安全リストによりブロック: {{value0}}",
-          "blockedAction": "ブロック中",
-          "checkUpdate": "更新を確認",
           "install": "インストール"
         },
         "PluginMarketplaceSourceDialog": {
@@ -12077,7 +12055,6 @@
         },
         "PluginsSettingsSection": {
           "systemLabel": "プラグインシステム",
-          "systemDescription": "確認して有効にするまで何も実行されません。",
           "loading": "プラグインを読み込み中…",
           "noInstalledResultsTitle": "一致するプラグインなし",
           "noInstalledResults": "この検索に一致するインストールされたプラグインはありません。",
@@ -12104,35 +12081,16 @@
           "enable": "有効にする"
         },
         "PluginSettingsRow": {
-          "blocked": "ブロック中",
-          "needsReview": "レビュー待ち",
-          "restarting": "再起動中",
-          "invalid": "無効",
-          "error": "エラー",
-          "disabled": "無効",
-          "running": "実行中",
-          "enabled": "有効",
           "loadingLogs": "ログを読み込み中…",
           "noLogs": "ログはまだありません",
           "logCount": "直近 {{value0}} 行",
-          "reviewAndEnable": "レビューして有効にする",
-          "official": "公式",
-          "dev": "開発",
           "bundled": "同梱",
-          "noDescription": "説明はありません。",
           "killListMessage": "Orca の安全リストがこのプラグインを無効にしました: {{value0}}",
-          "viewAdvisory": "アドバイザリーを表示",
-          "runtimeError": "エラーで停止しました。詳細はログを確認してください。",
-          "restartCount": " · {{value0}}回再起動",
           "moreActions": "{{value0}}の追加操作",
-          "hideLogs": "ログを非表示",
           "viewLogs": "ログを表示",
-          "rollback": "ロールバック",
-          "remove": "削除",
           "disableLabel": "{{value0}}を無効にする",
           "enableLabel": "{{value0}}を有効にする",
           "invalidPluginError": "このプラグインのファイルが無効です。修正してから更新してください。",
-          "languageCoverage": "{{value0}} {{value1}}% 翻訳済み",
           "syntaxFailed": "ハイライトを停止しました: この文法でエラーが発生しました。"
         },
         "PluginVmRecipeConsentPreview": {
@@ -13180,7 +13138,6 @@
           "installed": "インストール済み",
           "installedFailedTitle": "インストール済みのプラグインを読み取れませんでした。",
           "updatesTitle": "アップデート",
-          "sourcesLabel": "カタログのソース",
           "refreshLabel": "カタログを更新",
           "noResultsTitle": "「{{value0}}」に一致するプラグインはありません",
           "noneInstalledTitle": "インストール済みのプラグインはありません",
@@ -13196,11 +13153,9 @@
           "stoppedTitle": "エラーのため停止しました",
           "stoppedBody": "クラッシュが続きました。再起動して再試行してください。",
           "invalidTitle": "Orca はこのプラグインを読み込めません",
-          "reviewBody": "追加される内容とアクセスできる範囲を確認してから有効にしてください。それまでは何も実行されません。",
           "needsOrcaTitle": "Orca {{value0}} 以降が必要です",
           "needsOrcaBody": "現在は Orca {{value0}} です。",
           "back": "プラグイン",
-          "install": "インストール…",
           "info": "情報",
           "version": "バージョン",
           "latest": "最新",
@@ -13208,7 +13163,6 @@
           "requiresValue": "Orca {{value0}} 以降",
           "categories": "カテゴリ",
           "pluginId": "プラグイン ID",
-          "content": "内容",
           "repository": "リポジトリ",
           "stoppedDataBody": "ファイルを読み込めませんでした。再起動して再試行してください。",
           "newerBody": "表示中にカタログが更新されました。",
@@ -13231,7 +13185,6 @@
           "recipe": "マシンレシピ",
           "access": "アクセスできる範囲",
           "accessLoading": "プラグインを読み込み中…",
-          "noAccess": "自身のファイル以外にはアクセスしません",
           "logs": "ログ",
           "copyLogs": "コピー",
           "accessFailed": "アクセス範囲を読み取れませんでした",
@@ -13247,33 +13200,24 @@
           "viewError": "エラーを表示",
           "copyId": "プラグイン ID をコピー",
           "checkUpdate": "アップデートを確認",
-          "rollback": "ロールバック…",
           "bundledWithOrca": "Orca に同梱",
           "installName": "{{value0}} をインストール",
           "copied": "プラグイン ID をコピーしました",
           "copyFailed": "プラグイン ID をコピーできませんでした。",
-          "stopped": "停止",
-          "cantLoad": "読み込めません",
-          "on": "オン",
           "details": "詳細",
-          "enterKey": "Enter",
           "unverified": "未検証",
           "crashedOnce": "1 回クラッシュしました",
           "updateAvailable": "アップデート {{value0}} あり",
           "updateLabel": "{{value0}} を {{value1}} にアップデート",
           "update": "{{value0}} にアップデート",
           "needsOrca": "Orca {{value0}} が必要",
-          "off": "オフ",
           "rollbackTo": "{{value0}} に戻す…",
           "dataLoadFailed": "ファイルを読み込めませんでした"
         },
         "PluginSettingsOverview": {
           "offTitle": "プラグインはオフです",
-          "offBody": "プラグインは何も実行されていません。オンにすると、カタログを閲覧し、インストールしたものを使えます。",
           "turnOn": "プラグインをオンにする",
-          "systemDescription": "すべてのプラグインを一度にオフにします。確認して有効にするまで何も実行されません。",
-          "pausedCount": "{{value0}} 件を一時停止中",
-          "pausedUnknown": "インストール済みのプラグインは一時停止中です。プラグインをオンにすると再開します。"
+          "pausedCount": "{{value0}} 件を一時停止中"
         },
         "PluginFilterPopover": {
           "label": "プラグインを絞り込む",
@@ -13316,8 +13260,7 @@
           "homepage": "ホームページ",
           "whatsNew": "新機能",
           "hashCopied": "コンテンツハッシュをコピーしました",
-          "hashCopyFailed": "ハッシュをコピーできませんでした。",
-          "copyHash": "コンテンツハッシュ {{value0}} をコピー"
+          "hashCopyFailed": "ハッシュをコピーできませんでした。"
         },
         "PluginListEmptyStates": {
           "noFilterMatches": "これらのフィルターに一致するプラグインはありません",
@@ -13358,6 +13301,16 @@
           "label": "アルファ版：",
           "body": "プラグインのインターフェースは変更される可能性があります。細かな違いが生じることがあります。",
           "dismiss": "アルファ版のお知らせを閉じる"
+        },
+        "PluginStatus": {
+          "needsReview": "レビュー待ち",
+          "restarting": "再起動中",
+          "stopped": "停止",
+          "cantLoad": "読み込めません",
+          "off": "オフ",
+          "running": "実行中",
+          "on": "オン",
+          "blocked": "ブロック中"
         }
       },
       "right": {

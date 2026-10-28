@@ -5935,25 +5935,10 @@
           "e4b5e909ff": "Quando desativado, os espaços de trabalho ocultos por uma opção Ocultar no menu Filtros da barra lateral não mostram o ponto de não lido nem enviam notificações para este computador ou seu celular."
         },
         "PluginConsentDialog": {
-          "workerTrust": "Worker em segundo plano — executa seu próprio processo",
-          "instructionalTrust": "Conteúdo instrucional — executa depois sob autoridade do usuário ou agente",
-          "declarativeTrust": "Conteúdo declarativo — sem código de plugin",
-          "panelTrust": "Painel ou conteúdo integrado ao host — sem processo worker",
-          "trustShortWorker": "Worker",
-          "trustShortInstructional": "Instrucional",
-          "trustShortPanel": "Painel",
-          "trustShortDeclarative": "Declarativo",
-          "reviewTitle": "Revisar plugin",
-          "title": "Revisar permissões",
-          "mixedTitle": "Revisar acesso e conteúdo",
-          "instructionalTitle": "Revisar conteúdo do plugin",
-          "subtitle": "{{value0}} v{{value1}} · {{value2}}",
           "reconsent": "Mudou desde que você aprovou",
-          "capabilities": "Este plugin pode",
           "warning": "Acesso total aos seus arquivos, rede e processos",
           "instructionalWarning": "Os comandos podem agir por você ou seus agentes",
           "declarativeWarning": "Somente conteúdo. Nenhum código é executado.",
-          "keepDisabled": "Manter Desativado",
           "enable": "Ativar plugin",
           "capability": {
             "workspaceRead": "Ler nomes, branches e terminais dos workspaces",
@@ -6094,31 +6079,13 @@
           }
         },
         "PluginSettingsRow": {
-          "blocked": "Bloqueado",
-          "needsReview": "Precisa de revisão",
-          "restarting": "Reiniciando",
-          "invalid": "Inválido",
-          "error": "Erro",
-          "disabled": "Desativado",
-          "running": "Em execução",
-          "enabled": "Ativado",
           "loadingLogs": "Carregando logs…",
           "noLogs": "Nenhum log ainda",
           "logCount": "Últimas {{value0}} linhas",
-          "reviewAndEnable": "Revisar e ativar",
-          "official": "Oficial",
-          "dev": "Dev",
           "bundled": "Incluído",
-          "noDescription": "Nenhuma descrição fornecida.",
           "killListMessage": "A lista de segurança do Orca desativou este plugin: {{value0}}",
-          "viewAdvisory": "Ver aviso",
-          "runtimeError": "O plugin parou após um erro de ativação ou de worker.",
-          "restartCount": " · {{value0}} reinicializações",
           "moreActions": "Mais ações para {{value0}}",
-          "hideLogs": "Ocultar logs",
           "viewLogs": "Ver logs",
-          "rollback": "Reverter",
-          "remove": "Remover",
           "disableLabel": "Desativar {{value0}}",
           "enableLabel": "Ativar {{value0}}",
           "invalidPluginError": "O manifesto do plugin ou os arquivos instalados são inválidos. Corrija o plugin e atualize."
@@ -6797,7 +6764,6 @@
           "loading": "Carregando plugins do catálogo…",
           "tryAgain": "Tentar novamente",
           "noSourcesTitle": "Nenhum catálogo configurado",
-          "noSources": "Adicione um catálogo Git oficial, da comunidade ou privado para navegar por plugins.",
           "addSource": "Adicionar catálogo",
           "noResultsTitle": "Nenhum plugin correspondente",
           "noResults": "Nenhum plugin do catálogo corresponde a esta busca.",
@@ -7143,7 +7109,6 @@
         },
         "PluginsSettingsSection": {
           "systemLabel": "Sistema de plugins",
-          "systemDescription": "Descobre plugins instalados e permite ativá-los individualmente. Nada é executado até que você revise e ative. Os workers sempre são executados neste computador; ações de espaço de trabalho SSH são roteadas através do Orca.",
           "loading": "Carregando plugins…",
           "noInstalledResultsTitle": "Nenhum plugin correspondente",
           "noInstalledResults": "Nenhum plugin instalado corresponde a esta busca.",
@@ -8009,12 +7974,7 @@
           }
         },
         "PluginMarketplaceListingRow": {
-          "official": "Oficial",
-          "installed": "Instalado",
-          "noDescription": "Nenhuma descrição fornecida.",
           "blocked": "Bloqueado pela lista de segurança do Orca: {{value0}}",
-          "blockedAction": "Bloqueado",
-          "checkUpdate": "Verificar atualização",
           "install": "Instalar"
         },
         "useWarpThemeImport": {
@@ -9002,6 +8962,12 @@
           "label": "Alpha:",
           "body": "A interface de plugins pode mudar. Espere nuances.",
           "dismiss": "Dispensar aviso Alpha"
+        },
+        "PluginStatus": {
+          "needsReview": "Precisa de revisão",
+          "restarting": "Reiniciando",
+          "running": "Em execução",
+          "blocked": "Bloqueado"
         }
       },
       "right": {

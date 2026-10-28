@@ -11934,25 +11934,10 @@
           "description": "终端、聊天和 Markdown 中的链接会在浏览器中打开，焦点仍停留在你点击的位置。"
         },
         "PluginConsentDialog": {
-          "workerTrust": "后台工作进程 — 运行自己的进程",
-          "instructionalTrust": "指令内容 — 在用户或智能体权限下运行",
-          "declarativeTrust": "声明式内容 — 无插件代码",
-          "panelTrust": "面板或主机集成内容 — 无工作进程",
-          "trustShortWorker": "工作进程",
-          "trustShortInstructional": "指令",
-          "trustShortPanel": "面板",
-          "trustShortDeclarative": "声明式",
-          "reviewTitle": "审查插件",
-          "title": "审查权限",
-          "mixedTitle": "审查访问和内容",
-          "instructionalTitle": "审查插件内容",
-          "subtitle": "{{value0}} v{{value1}} · {{value2}}",
           "reconsent": "自你批准后已更改",
-          "capabilities": "此插件可以",
           "warning": "完全访问你的文件、网络和进程",
           "instructionalWarning": "其命令可代表你或你的代理执行操作",
           "declarativeWarning": "仅内容。不运行代码。",
-          "keepDisabled": "保持禁用",
           "enable": "启用插件",
           "capability": {
             "workspaceRead": "读取工作区名称、分支和终端",
@@ -11963,8 +11948,7 @@
             "agentsRead": "在智能体状态更改时获得通知",
             "terminalRun": "在终端中运行命令（包括 SSH）"
           },
-          "decisionFailed": "无法保存权限决定。请重试。",
-          "whatChanged": "变更内容"
+          "decisionFailed": "无法保存权限决定。请重试。"
         },
         "PluginConsentProvenance": {
           "official": "Official",
@@ -12022,7 +12006,6 @@
           "loading": "正在加载目录插件…",
           "tryAgain": "重试",
           "noSourcesTitle": "未配置目录",
-          "noSources": "添加官方、社区或私有 Git 目录以浏览插件。",
           "addSource": "添加目录",
           "noResultsTitle": "没有匹配的插件",
           "noResults": "没有目录插件匹配此搜索。",
@@ -12031,12 +12014,7 @@
           "empty": "已配置的目录中没有任何插件。"
         },
         "PluginMarketplaceListingRow": {
-          "official": "官方",
-          "installed": "已安装",
-          "noDescription": "未提供描述。",
           "blocked": "已被 Orca 安全列表阻止：{{value0}}",
-          "blockedAction": "已阻止",
-          "checkUpdate": "检查更新",
           "install": "Install"
         },
         "PluginMarketplaceSourceDialog": {
@@ -12077,7 +12055,6 @@
         },
         "PluginsSettingsSection": {
           "systemLabel": "插件系统",
-          "systemDescription": "在你审查并启用之前，不会运行任何内容。",
           "loading": "正在加载插件…",
           "noInstalledResultsTitle": "没有匹配的插件",
           "noInstalledResults": "没有已安装的插件匹配此搜索。",
@@ -12104,35 +12081,16 @@
           "enable": "启用"
         },
         "PluginSettingsRow": {
-          "blocked": "已阻止",
-          "needsReview": "需要审查",
-          "restarting": "正在重启",
-          "invalid": "无效",
-          "error": "错误",
-          "disabled": "已禁用",
-          "running": "运行中",
-          "enabled": "已启用",
           "loadingLogs": "正在加载日志…",
           "noLogs": "暂无日志",
           "logCount": "最近 {{value0}} 行",
-          "reviewAndEnable": "审查并启用",
-          "official": "官方",
-          "dev": "开发",
           "bundled": "内置",
-          "noDescription": "未提供描述。",
           "killListMessage": "Orca 的安全列表禁用了此插件：{{value0}}",
-          "viewAdvisory": "查看公告",
-          "runtimeError": "因错误而停止。请查看日志了解详情。",
-          "restartCount": " · {{value0}} 次重启",
           "moreActions": "{{value0}} 的更多操作",
-          "hideLogs": "隐藏日志",
           "viewLogs": "查看日志",
-          "rollback": "回滚",
-          "remove": "移除",
           "disableLabel": "禁用 {{value0}}",
           "enableLabel": "启用 {{value0}}",
           "invalidPluginError": "此插件的文件无效。修复后请刷新。",
-          "languageCoverage": "{{value0}} 已翻译 {{value1}}%",
           "syntaxFailed": "高亮已停止：此语法出错。"
         },
         "PluginVmRecipeConsentPreview": {
@@ -13180,7 +13138,6 @@
           "installed": "已安装",
           "installedFailedTitle": "无法读取已安装的插件。",
           "updatesTitle": "更新",
-          "sourcesLabel": "目录来源",
           "refreshLabel": "刷新目录",
           "noResultsTitle": "没有与“{{value0}}”匹配的插件",
           "noneInstalledTitle": "尚未安装插件",
@@ -13196,11 +13153,9 @@
           "stoppedTitle": "因错误而停止",
           "stoppedBody": "它一直崩溃。重新启动以重试。",
           "invalidTitle": "Orca 无法加载此插件",
-          "reviewBody": "请先查看它添加的内容和可访问的范围，然后再启用。在此之前不会运行任何内容。",
           "needsOrcaTitle": "需要 Orca {{value0}} 或更高版本",
           "needsOrcaBody": "你的 Orca 版本为 {{value0}}。",
           "back": "插件",
-          "install": "安装…",
           "info": "信息",
           "version": "版本",
           "latest": "最新",
@@ -13208,7 +13163,6 @@
           "requiresValue": "Orca {{value0}} 或更高版本",
           "categories": "类别",
           "pluginId": "插件 ID",
-          "content": "内容",
           "repository": "仓库",
           "stoppedDataBody": "无法加载其文件。重新启动以重试。",
           "newerBody": "你浏览时目录已更改。",
@@ -13231,7 +13185,6 @@
           "recipe": "机器配方",
           "access": "可访问",
           "accessLoading": "正在读取插件…",
-          "noAccess": "仅限自身文件",
           "logs": "日志",
           "copyLogs": "复制",
           "accessFailed": "无法读取其访问权限",
@@ -13247,33 +13200,24 @@
           "viewError": "查看错误",
           "copyId": "复制插件 ID",
           "checkUpdate": "检查更新",
-          "rollback": "回滚…",
           "bundledWithOrca": "随 Orca 附带",
           "installName": "安装 {{value0}}",
           "copied": "已复制插件 ID",
           "copyFailed": "无法复制插件 ID。",
-          "stopped": "已停止",
-          "cantLoad": "无法加载",
-          "on": "已开启",
           "details": "详情",
-          "enterKey": "Enter",
           "unverified": "未验证",
           "crashedOnce": "崩溃一次",
           "updateAvailable": "有可用更新 {{value0}}",
           "updateLabel": "将 {{value0}} 更新到 {{value1}}",
           "update": "更新到 {{value0}}",
           "needsOrca": "需要 Orca {{value0}}",
-          "off": "已关闭",
           "rollbackTo": "回滚到 {{value0}}…",
           "dataLoadFailed": "无法加载其文件"
         },
         "PluginSettingsOverview": {
           "offTitle": "插件已关闭",
-          "offBody": "你的插件都不会运行。开启后即可浏览目录并使用已安装的插件。",
           "turnOn": "开启插件",
-          "systemDescription": "一次性关闭所有插件。在你查看并启用之前，不会运行任何内容。",
-          "pausedCount": "已暂停 {{value0}} 个",
-          "pausedUnknown": "已安装的插件已暂停，开启插件后即可恢复。"
+          "pausedCount": "已暂停 {{value0}} 个"
         },
         "PluginFilterPopover": {
           "label": "筛选插件",
@@ -13316,8 +13260,7 @@
           "homepage": "主页",
           "whatsNew": "新功能",
           "hashCopied": "已复制内容哈希",
-          "hashCopyFailed": "无法复制哈希。",
-          "copyHash": "复制内容哈希 {{value0}}"
+          "hashCopyFailed": "无法复制哈希。"
         },
         "PluginListEmptyStates": {
           "noFilterMatches": "没有与这些筛选条件匹配的插件",
@@ -13358,6 +13301,16 @@
           "label": "Alpha 版：",
           "body": "插件接口可能会变化，细节可能有所不同。",
           "dismiss": "关闭 Alpha 版提示"
+        },
+        "PluginStatus": {
+          "needsReview": "需要审查",
+          "restarting": "正在重启",
+          "stopped": "已停止",
+          "cantLoad": "无法加载",
+          "off": "已关闭",
+          "running": "运行中",
+          "on": "已开启",
+          "blocked": "已阻止"
         }
       },
       "right": {

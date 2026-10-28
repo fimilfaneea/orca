@@ -12296,25 +12296,10 @@
           "leaveToTerminalLabel": "Leave to terminal"
         },
         "PluginConsentDialog": {
-          "workerTrust": "Background worker — runs its own process",
-          "instructionalTrust": "Instructional content — runs later under user or agent authority",
-          "declarativeTrust": "Declarative content — no plugin code",
-          "panelTrust": "Panel or host-integrated content — no worker process",
-          "trustShortWorker": "Worker",
-          "trustShortInstructional": "Instructional",
-          "trustShortPanel": "Panel",
-          "trustShortDeclarative": "Declarative",
-          "reviewTitle": "Review plugin",
-          "title": "Review permissions",
-          "mixedTitle": "Review access and content",
-          "instructionalTitle": "Review plugin content",
-          "subtitle": "{{value0}} v{{value1}} · {{value2}}",
           "reconsent": "Changed since you approved it",
-          "capabilities": "This plugin can",
           "warning": "Full access to your files, network, and processes",
           "instructionalWarning": "Its commands can act for you or your agents",
           "declarativeWarning": "Content only. No code runs.",
-          "keepDisabled": "Keep Disabled",
           "enable": "Enable plugin",
           "capability": {
             "workspaceRead": "Read workspace names, branches, and terminals",
@@ -12325,8 +12310,7 @@
             "agentsRead": "Get notified when agent status changes",
             "terminalRun": "Run commands in your terminals, including SSH"
           },
-          "decisionFailed": "Could not save the permission decision. Try again.",
-          "whatChanged": "What changed"
+          "decisionFailed": "Could not save the permission decision. Try again."
         },
         "PluginConsentProvenance": {
           "official": "Official",
@@ -12385,7 +12369,6 @@
           "loading": "Loading catalog plugins…",
           "tryAgain": "Try again",
           "noSourcesTitle": "No catalogs configured",
-          "noSources": "Add an official, community, or private Git catalog to browse plugins.",
           "addSource": "Add catalog",
           "noResultsTitle": "No matching plugins",
           "noResults": "No catalog plugins match this search.",
@@ -12394,12 +12377,7 @@
           "empty": "The configured catalogs do not list any plugins."
         },
         "PluginMarketplaceListingRow": {
-          "official": "Official",
-          "installed": "Installed",
-          "noDescription": "No description provided.",
           "blocked": "Blocked by Orca's safety list: {{value0}}",
-          "blockedAction": "Blocked",
-          "checkUpdate": "Check for update",
           "install": "Install"
         },
         "PluginMarketplaceSourceDialog": {
@@ -12440,7 +12418,6 @@
         },
         "PluginsSettingsSection": {
           "systemLabel": "Plugin system",
-          "systemDescription": "Nothing runs until you review and enable it.",
           "loading": "Loading plugins…",
           "noInstalledResultsTitle": "No matching plugins",
           "noInstalledResults": "No installed plugins match this search.",
@@ -12458,35 +12435,16 @@
           "restartFailed": "Couldn't restart {{value0}}."
         },
         "PluginSettingsRow": {
-          "blocked": "Blocked",
-          "needsReview": "Needs review",
-          "restarting": "Restarting",
-          "invalid": "Invalid",
-          "error": "Error",
-          "disabled": "Disabled",
-          "running": "Running",
-          "enabled": "Enabled",
           "loadingLogs": "Loading logs…",
           "noLogs": "No logs yet",
           "logCount": "Last {{value0}} lines",
-          "reviewAndEnable": "Review & enable",
-          "official": "Official",
-          "dev": "Dev",
           "bundled": "Bundled",
-          "noDescription": "No description provided.",
           "killListMessage": "Orca's safety list disabled this plugin: {{value0}}",
-          "viewAdvisory": "View advisory",
-          "runtimeError": "Stopped after an error. View logs for details.",
-          "restartCount": " · {{value0}} restarts",
           "moreActions": "More actions for {{value0}}",
-          "hideLogs": "Hide logs",
           "viewLogs": "View logs",
-          "rollback": "Roll back",
-          "remove": "Remove",
           "disableLabel": "Disable {{value0}}",
           "enableLabel": "Enable {{value0}}",
           "invalidPluginError": "This plugin's files are invalid. Fix them, then refresh.",
-          "languageCoverage": "{{value0}} {{value1}}% translated",
           "syntaxFailed": "Highlighting stopped: this grammar failed."
         },
         "PluginVmRecipeConsentPreview": {
@@ -13522,15 +13480,13 @@
           "installed": "Installed",
           "installedFailedTitle": "Couldn’t read your installed plugins.",
           "updatesTitle": "Updates",
-          "sourcesLabel": "Catalog sources",
           "refreshLabel": "Refresh catalogs",
           "noResultsTitle": "No plugins match “{{value0}}”",
           "noneInstalledTitle": "No plugins installed",
           "browseAll": "Browse all plugins",
           "resultCount": "{{value0}} plugins match",
           "resultCountOne": "1 plugin matches",
-          "updateAll": "Update all…",
-          "installedElsewhere": "Installed outside a catalog"
+          "updateAll": "Update all…"
         },
         "PluginDetailPage": {
           "bundled": "Bundled with Orca",
@@ -13539,11 +13495,9 @@
           "stoppedTitle": "Stopped after an error",
           "stoppedBody": "It kept crashing. Restart to try again.",
           "invalidTitle": "Orca can’t load this plugin",
-          "reviewBody": "Review what it adds and what it can reach, then enable it. Nothing runs before that.",
           "needsOrcaTitle": "Needs Orca {{value0}} or later",
           "needsOrcaBody": "You have Orca {{value0}}.",
           "back": "Plugins",
-          "install": "Install…",
           "info": "Info",
           "version": "Version",
           "latest": "Latest",
@@ -13551,7 +13505,6 @@
           "requiresValue": "Orca {{value0}} or later",
           "categories": "Categories",
           "pluginId": "Plugin ID",
-          "content": "Content",
           "repository": "Repository",
           "newerTitle": "Newer version available",
           "newerBody": "The catalog changed while you were here.",
@@ -13576,7 +13529,6 @@
           "recipe": "Machine recipe",
           "access": "Can access",
           "accessLoading": "Reading the plugin…",
-          "noAccess": "Nothing outside its own files",
           "logs": "Logs",
           "copyLogs": "Copy",
           "accessFailed": "Couldn’t read its access",
@@ -13593,23 +13545,17 @@
           "viewError": "View error",
           "copyId": "Copy plugin ID",
           "checkUpdate": "Check for update",
-          "rollback": "Roll back…",
           "bundledWithOrca": "Bundled with Orca",
           "installName": "Install {{value0}}",
           "copied": "Plugin ID copied",
           "copyFailed": "Couldn't copy the plugin ID.",
-          "stopped": "Stopped",
-          "cantLoad": "Can’t load",
-          "on": "On",
           "details": "Details",
-          "enterKey": "Enter",
           "unverified": "Unverified",
           "crashedOnce": "Crashed once",
           "updateAvailable": "update {{value0}} available",
           "updateLabel": "Update {{value0}} to {{value1}}",
           "update": "Update {{value0}}",
           "needsOrca": "Needs Orca {{value0}}",
-          "off": "Off",
           "rollbackTo": "Roll back to {{value0}}…",
           "copyContentHash": "Copy content hash",
           "reviewUpdate": "Review update",
@@ -13619,11 +13565,8 @@
         },
         "PluginSettingsOverview": {
           "offTitle": "Plugins are off",
-          "offBody": "Nothing from your plugins runs. Turn them on to browse the catalog and use what you installed.",
           "turnOn": "Turn on plugins",
-          "systemDescription": "Turns every plugin off at once. Nothing runs until you review and enable it.",
-          "pausedCount": "{{value0}} paused",
-          "pausedUnknown": "Your installed plugins are paused and will be back when you turn plugins on."
+          "pausedCount": "{{value0}} paused"
         },
         "PluginFilterPopover": {
           "label": "Filter plugins",
@@ -13666,8 +13609,7 @@
           "homepage": "Homepage",
           "whatsNew": "What’s new",
           "hashCopied": "Content hash copied",
-          "hashCopyFailed": "Couldn't copy the hash.",
-          "copyHash": "Copy content hash {{value0}}"
+          "hashCopyFailed": "Couldn't copy the hash."
         },
         "PluginListEmptyStates": {
           "noFilterMatches": "No plugins match these filters",
@@ -13798,6 +13740,16 @@
           "label": "Alpha:",
           "body": "The plugin interface may change. Expect nuances.",
           "dismiss": "Dismiss Alpha notice"
+        },
+        "PluginStatus": {
+          "needsReview": "Needs review",
+          "restarting": "Restarting",
+          "stopped": "Stopped",
+          "cantLoad": "Can’t load",
+          "off": "Off",
+          "running": "Running",
+          "on": "On",
+          "blocked": "Blocked"
         }
       },
       "right": {

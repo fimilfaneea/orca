@@ -11934,25 +11934,10 @@
           "description": "터미널, 채팅, 마크다운의 링크를 클릭한 위치에서 포커스를 옮기지 않고 브라우저에서 엽니다."
         },
         "PluginConsentDialog": {
-          "workerTrust": "백그라운드 워커 — 자체 프로세스 실행",
-          "instructionalTrust": "지시 내용 — 사용자 또는 에이전트 권한으로 나중에 실행",
-          "declarativeTrust": "선언적 내용 — 플러그인 코드 없음",
-          "panelTrust": "패널 또는 호스트 통합 내용 — 워커 프로세스 없음",
-          "trustShortWorker": "워커",
-          "trustShortInstructional": "지시",
-          "trustShortPanel": "패널",
-          "trustShortDeclarative": "선언적",
-          "reviewTitle": "플러그인 검토",
-          "title": "권한 검토",
-          "mixedTitle": "접근 및 내용 검토",
-          "instructionalTitle": "플러그인 내용 검토",
-          "subtitle": "{{value0}} v{{value1}} · {{value2}}",
           "reconsent": "승인 이후 변경됨",
-          "capabilities": "이 플러그인은 다음을 수행할 수 있습니다",
           "warning": "파일, 네트워크, 프로세스에 대한 전체 접근",
           "instructionalWarning": "명령이 사용자나 에이전트를 대신해 동작할 수 있습니다",
           "declarativeWarning": "콘텐츠만. 코드가 실행되지 않습니다.",
-          "keepDisabled": "비활성화 유지",
           "enable": "플러그인 활성화",
           "capability": {
             "workspaceRead": "워크스페이스 이름, 브랜치, 터미널 읽기",
@@ -11963,8 +11948,7 @@
             "agentsRead": "에이전트 상태가 변경될 때 알림 받기",
             "terminalRun": "터미널에서 명령 실행 (SSH 포함)"
           },
-          "decisionFailed": "권한 결정을 저장할 수 없습니다. 다시 시도하세요.",
-          "whatChanged": "변경 사항"
+          "decisionFailed": "권한 결정을 저장할 수 없습니다. 다시 시도하세요."
         },
         "PluginConsentProvenance": {
           "official": "공식",
@@ -12022,7 +12006,6 @@
           "loading": "카탈로그 플러그인 로딩 중…",
           "tryAgain": "다시 시도",
           "noSourcesTitle": "카탈로그 미구성",
-          "noSources": "플러그인을 탐색하려면 공식, 커뮤니티 또는 비공개 Git 카탈로그를 추가하세요.",
           "addSource": "카탈로그 추가",
           "noResultsTitle": "일치하는 플러그인 없음",
           "noResults": "이 검색에 일치하는 카탈로그 플러그인이 없습니다.",
@@ -12031,12 +12014,7 @@
           "empty": "구성된 카탈로그에 플러그인이 나열되어 있지 않습니다."
         },
         "PluginMarketplaceListingRow": {
-          "official": "공식",
-          "installed": "설치됨",
-          "noDescription": "설명이 제공되지 않았습니다.",
           "blocked": "Orca 안전 목록에 의해 차단됨: {{value0}}",
-          "blockedAction": "차단됨",
-          "checkUpdate": "업데이트 확인",
           "install": "설치"
         },
         "PluginMarketplaceSourceDialog": {
@@ -12077,7 +12055,6 @@
         },
         "PluginsSettingsSection": {
           "systemLabel": "플러그인 시스템",
-          "systemDescription": "검토하고 활성화하기 전에는 아무것도 실행되지 않습니다.",
           "loading": "플러그인 로딩 중…",
           "noInstalledResultsTitle": "일치하는 플러그인 없음",
           "noInstalledResults": "이 검색에 일치하는 설치된 플러그인이 없습니다.",
@@ -12104,35 +12081,16 @@
           "enable": "활성화"
         },
         "PluginSettingsRow": {
-          "blocked": "차단됨",
-          "needsReview": "검토 필요",
-          "restarting": "재시작 중",
-          "invalid": "유효하지 않음",
-          "error": "오류",
-          "disabled": "비활성화됨",
-          "running": "실행 중",
-          "enabled": "활성화됨",
           "loadingLogs": "로그 로딩 중…",
           "noLogs": "아직 로그가 없습니다",
           "logCount": "최근 {{value0}}줄",
-          "reviewAndEnable": "검토 및 활성화",
-          "official": "공식",
-          "dev": "개발",
           "bundled": "번들",
-          "noDescription": "설명이 제공되지 않았습니다.",
           "killListMessage": "Orca 안전 목록이 이 플러그인을 비활성화했습니다: {{value0}}",
-          "viewAdvisory": "공지 보기",
-          "runtimeError": "오류로 중지되었습니다. 자세한 내용은 로그를 확인하세요.",
-          "restartCount": " · {{value0}}회 재시작",
           "moreActions": "{{value0}}의 더 많은 작업",
-          "hideLogs": "로그 숨기기",
           "viewLogs": "로그 보기",
-          "rollback": "롤백",
-          "remove": "제거",
           "disableLabel": "{{value0}} 비활성화",
           "enableLabel": "{{value0}} 활성화",
           "invalidPluginError": "이 플러그인의 파일이 유효하지 않습니다. 수정한 후 새로 고치세요.",
-          "languageCoverage": "{{value0}} {{value1}}% 번역됨",
           "syntaxFailed": "강조 표시가 중지됨: 이 문법에 오류가 발생했습니다."
         },
         "PluginVmRecipeConsentPreview": {
@@ -13180,7 +13138,6 @@
           "installed": "설치됨",
           "installedFailedTitle": "설치된 플러그인을 읽을 수 없습니다.",
           "updatesTitle": "업데이트",
-          "sourcesLabel": "카탈로그 소스",
           "refreshLabel": "카탈로그 새로 고침",
           "noResultsTitle": "‘{{value0}}’와(과) 일치하는 플러그인이 없습니다",
           "noneInstalledTitle": "설치된 플러그인이 없습니다",
@@ -13196,11 +13153,9 @@
           "stoppedTitle": "오류로 인해 중지됨",
           "stoppedBody": "계속 충돌했습니다. 다시 시작해 재시도하세요.",
           "invalidTitle": "Orca가 이 플러그인을 불러올 수 없습니다",
-          "reviewBody": "추가되는 내용과 접근할 수 있는 범위를 검토한 후 사용하도록 설정하세요. 그 전에는 아무것도 실행되지 않습니다.",
           "needsOrcaTitle": "Orca {{value0}} 이상이 필요합니다",
           "needsOrcaBody": "현재 Orca {{value0}}입니다.",
           "back": "플러그인",
-          "install": "설치…",
           "info": "정보",
           "version": "버전",
           "latest": "최신",
@@ -13208,7 +13163,6 @@
           "requiresValue": "Orca {{value0}} 이상",
           "categories": "카테고리",
           "pluginId": "플러그인 ID",
-          "content": "콘텐츠",
           "repository": "저장소",
           "stoppedDataBody": "파일을 불러오지 못했습니다. 다시 시작해 재시도하세요.",
           "newerBody": "보는 동안 카탈로그가 변경되었습니다.",
@@ -13231,7 +13185,6 @@
           "recipe": "머신 레시피",
           "access": "접근 가능 범위",
           "accessLoading": "플러그인을 읽는 중…",
-          "noAccess": "자체 파일 외에는 접근하지 않음",
           "logs": "로그",
           "copyLogs": "복사",
           "accessFailed": "접근 범위를 읽지 못했습니다",
@@ -13247,33 +13200,24 @@
           "viewError": "오류 보기",
           "copyId": "플러그인 ID 복사",
           "checkUpdate": "업데이트 확인",
-          "rollback": "롤백…",
           "bundledWithOrca": "Orca에 기본 포함",
           "installName": "{{value0}} 설치",
           "copied": "플러그인 ID를 복사했습니다",
           "copyFailed": "플러그인 ID를 복사할 수 없습니다.",
-          "stopped": "중지됨",
-          "cantLoad": "불러올 수 없음",
-          "on": "켜짐",
           "details": "세부 정보",
-          "enterKey": "Enter",
           "unverified": "확인되지 않음",
           "crashedOnce": "한 번 충돌함",
           "updateAvailable": "업데이트 {{value0}} 사용 가능",
           "updateLabel": "{{value0}}을(를) {{value1}}(으)로 업데이트",
           "update": "{{value0}}(으)로 업데이트",
           "needsOrca": "Orca {{value0}} 필요",
-          "off": "꺼짐",
           "rollbackTo": "{{value0}}(으)로 되돌리기…",
           "dataLoadFailed": "파일을 불러오지 못했습니다"
         },
         "PluginSettingsOverview": {
           "offTitle": "플러그인이 꺼져 있습니다",
-          "offBody": "플러그인이 아무것도 실행되지 않습니다. 켜면 카탈로그를 둘러보고 설치한 항목을 사용할 수 있습니다.",
           "turnOn": "플러그인 켜기",
-          "systemDescription": "모든 플러그인을 한 번에 끕니다. 검토하고 사용하도록 설정하기 전에는 아무것도 실행되지 않습니다.",
-          "pausedCount": "{{value0}}개 일시 중지됨",
-          "pausedUnknown": "설치된 플러그인은 일시 중지되었으며 플러그인을 켜면 다시 사용할 수 있습니다."
+          "pausedCount": "{{value0}}개 일시 중지됨"
         },
         "PluginFilterPopover": {
           "label": "플러그인 필터",
@@ -13316,8 +13260,7 @@
           "homepage": "홈페이지",
           "whatsNew": "새로운 기능",
           "hashCopied": "콘텐츠 해시를 복사했습니다",
-          "hashCopyFailed": "해시를 복사할 수 없습니다.",
-          "copyHash": "콘텐츠 해시 {{value0}} 복사"
+          "hashCopyFailed": "해시를 복사할 수 없습니다."
         },
         "PluginListEmptyStates": {
           "noFilterMatches": "이 필터와 일치하는 플러그인이 없습니다",
@@ -13358,6 +13301,16 @@
           "label": "알파:",
           "body": "플러그인 인터페이스는 변경될 수 있습니다. 세부 동작이 달라질 수 있습니다.",
           "dismiss": "알파 안내 닫기"
+        },
+        "PluginStatus": {
+          "needsReview": "검토 필요",
+          "restarting": "재시작 중",
+          "stopped": "중지됨",
+          "cantLoad": "불러올 수 없음",
+          "off": "꺼짐",
+          "running": "실행 중",
+          "on": "켜짐",
+          "blocked": "차단됨"
         }
       },
       "right": {
