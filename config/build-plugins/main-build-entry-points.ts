@@ -8,7 +8,6 @@ export const MAIN_BUILD_ENTRY_POINTS: Record<string, string> = {
   // Why: sandboxed webview preloads cannot load Rollup helper chunks.
   'browser-window-close-preload': resolve('src/preload/browser-window-close.ts'),
   'doc-preview-link-preload': resolve('src/preload/doc-preview-link.ts'),
-  'plugin-editor-guest-preload': resolve('src/preload/plugin-editor-guest.ts'),
   'daemon-entry': resolve('src/main/daemon/daemon-entry.ts'),
   'plugin-host-entry': resolve('src/main/plugins/workers/plugin-host-entry.ts'),
   'computer-sidecar': resolve('src/main/computer/computer-sidecar.ts'),
